@@ -71,13 +71,262 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Kyle Weeks</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>$result =  Get-AzureBillingPeriods -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber'</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-AzureGraphObject</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>AzureGraphObject</command:noun>
+      <maml:description>
+        <maml:para>Query Azure Graph API for object details</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Use the $top oData filter to query objects in bulk using paging.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-AzureGraphObject</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>accessToken</maml:name>
+          <maml:Description>
+            <maml:para>An OAuth accessToken. See Get-AzureOAuthTokenUser as a possible source.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>apiVersion</maml:name>
+          <maml:Description>
+            <maml:para>Some of the API versions in Graph are 'beta' - default to 1.0</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+          <maml:name>batchSize</maml:name>
+          <maml:Description>
+            <maml:para>Used to determine how many records to return per page. Microsoft Graph behaviors are per api...</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>200</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+          <maml:name>objectType</maml:name>
+          <maml:Description>
+            <maml:para>The object type to query. Paging with the $top filter is supported for all /users, but the $top filter is rejected.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>accessToken</maml:name>
+        <maml:Description>
+          <maml:para>An OAuth accessToken. See Get-AzureOAuthTokenUser as a possible source.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>apiVersion</maml:name>
+        <maml:Description>
+          <maml:para>Some of the API versions in Graph are 'beta' - default to 1.0</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+        <maml:name>batchSize</maml:name>
+        <maml:Description>
+          <maml:para>Used to determine how many records to return per page. Microsoft Graph behaviors are per api...</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>200</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+        <maml:name>objectType</maml:name>
+        <maml:Description>
+          <maml:para>The object type to query. Paging with the $top filter is supported for all /users, but the $top filter is rejected.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Author: Kyle Weeks</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>$results = Get-AzureGraphObject -accessToken $accessToken -objectType ''</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>$results = Get-AzureGraphObject -accessToken $accessToken -apiVersion 'Beta' -batchSize 500 -objectType ''</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-AzureGraphUsers</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>AzureGraphUsers</command:noun>
+      <maml:description>
+        <maml:para>Query Azure Graph API for basic user details</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Requires having identity set in Azure AD to allow access to Graph API, and an Azure AD Application registered to get an API OAuth token from.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-AzureGraphUsers</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
+          <maml:name>userPrincipalNames</maml:name>
+          <maml:Description>
+            <maml:para>A valid user userPrincipalName</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Array</command:parameterValue>
+          <dev:type>
+            <maml:name>Array</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>accessToken</maml:name>
+          <maml:Description>
+            <maml:para>An OAuth accessToken. See Get-AzureOAuthTokenUser as a possible source.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+          <maml:name>query</maml:name>
+          <maml:Description>
+            <maml:para>Optional to query specified information about the user object.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
+        <maml:name>userPrincipalNames</maml:name>
+        <maml:Description>
+          <maml:para>A valid user userPrincipalName</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Array</command:parameterValue>
+        <dev:type>
+          <maml:name>Array</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>accessToken</maml:name>
+        <maml:Description>
+          <maml:para>An OAuth accessToken. See Get-AzureOAuthTokenUser as a possible source.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+        <maml:name>query</maml:name>
+        <maml:Description>
+          <maml:para>Optional to query specified information about the user object.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Author: Kyle Weeks</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>$result = Get-AzureGraphUsers -accessToken $accessToken -userPrincipalName 'jemina@somedomain.onmicrosoft.com' -query</dev:code>
         <dev:remarks>
           <maml:para></maml:para>
         </dev:remarks>
@@ -127,7 +376,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
           <maml:name>query</maml:name>
           <maml:Description>
-            <maml:para>A valid Log Analytics query. Example = 'AzureDiagnostics | where ResultType == "Failed"'</maml:para>
+            <maml:para>A valid Log Analytics query. Example = 'AzureDiagnostics | where ResultType == "Failed" | where RunbookName_s == "Name of runbook" |where TimeGenerated &gt; ago(1h)'</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -166,7 +415,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
         <maml:name>query</maml:name>
         <maml:Description>
-          <maml:para>A valid Log Analytics query. Example = 'AzureDiagnostics | where ResultType == "Failed"'</maml:para>
+          <maml:para>A valid Log Analytics query. Example = 'AzureDiagnostics | where ResultType == "Failed" | where RunbookName_s == "Name of runbook" |where TimeGenerated &gt; ago(1h)'</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -337,7 +586,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Kyle Weeks</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -573,7 +822,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
           <maml:name>resource</maml:name>
           <maml:Description>
-            <maml:para>Resource to be interacted with. Example = https://api.loganalytics.io</maml:para>
+            <maml:para>Resource to be interacted with. Example = https://api.loganalytics.io, or https://graph.microsoft.com</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -583,6 +832,18 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
+          <maml:name>prompt</maml:name>
+          <maml:Description>
+            <maml:para>Define if your app login should prompt the user for consent in the Azure portal on login. none = will never request and rely on SSO (web apps)</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>Consent</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
           <maml:name>refreshtoken</maml:name>
           <maml:Description>
             <maml:para>Supply a refresh token to get a new valid token for use after expiring</maml:para>
@@ -648,7 +909,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
         <maml:name>resource</maml:name>
         <maml:Description>
-          <maml:para>Resource to be interacted with. Example = https://api.loganalytics.io</maml:para>
+          <maml:para>Resource to be interacted with. Example = https://api.loganalytics.io, or https://graph.microsoft.com</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
@@ -658,6 +919,18 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
+        <maml:name>prompt</maml:name>
+        <maml:Description>
+          <maml:para>Define if your app login should prompt the user for consent in the Azure portal on login. none = will never request and rely on SSO (web apps)</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>Consent</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
         <maml:name>refreshtoken</maml:name>
         <maml:Description>
           <maml:para>Supply a refresh token to get a new valid token for use after expiring</maml:para>
@@ -683,7 +956,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Kyle Weeks</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -799,7 +1072,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Kyle Weeks</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -874,7 +1147,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
           <maml:name>outputDir</maml:name>
           <maml:Description>
-            <maml:para>A directory for outputing a CSV of collected data in the format specified.</maml:para>
+            <maml:para>A directory for outputing a CSV of collected data.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -925,7 +1198,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
         <maml:name>outputDir</maml:name>
         <maml:Description>
-          <maml:para>A directory for outputing a CSV of collected data in the format specified.</maml:para>
+          <maml:para>A directory for outputing a CSV of collected data.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -939,7 +1212,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Kyle Weeks</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -1096,7 +1369,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Kyle Weeks</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -1253,7 +1526,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Kyle Weeks</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -1348,6 +1621,30 @@
           <maml:name>vnetRG</maml:name>
           <maml:Description>
             <maml:para>Name of virtual network gateway resource group</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="none">
+          <maml:name>scriptPath</maml:name>
+          <maml:Description>
+            <maml:para>Path in Azure Storeage where Powershell file resides that will be run on vm at build time</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="15" aliases="none">
+          <maml:name>scriptFile</maml:name>
+          <maml:Description>
+            <maml:para>Name of File in scriptPath location that will be run on vm at build time</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1611,12 +1908,36 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="none">
+        <maml:name>scriptPath</maml:name>
+        <maml:Description>
+          <maml:para>Path in Azure Storeage where Powershell file resides that will be run on vm at build time</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="15" aliases="none">
+        <maml:name>scriptFile</maml:name>
+        <maml:Description>
+          <maml:para>Name of File in scriptPath location that will be run on vm at build time</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
     <command:inputTypes />
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Travis Sobeck</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -1972,7 +2293,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Travis Sobeck</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -2081,7 +2402,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Author: Travis Sobeck</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>

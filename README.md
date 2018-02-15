@@ -10,4 +10,10 @@ Second on azure billing and usage consumption.
 
 Third on graph API access query.
 
-Version 1.0.3
+# Releases
+
+## 1.1.1 -- 2-15-18
+Add Code Signing
+
+## Prior to 1.1.1
+Initial public release of working module for Azure public cloud

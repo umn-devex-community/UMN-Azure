@@ -14,7 +14,6 @@ Get azure usage directly as a CSV (as if downloading from the web UI)
 
 ```
 Get-AzureUsageCSV [-enrollment] <String> [-key] <String> [-billingPeriod] <String> [-outputDir] <String>
- [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -77,7 +76,7 @@ Accept wildcard characters: False
 ```
 
 ### -outputDir
-A directory for outputing a CSV of collected data in the format specified.
+A directory for outputing a CSV of collected data.
 
 ```yaml
 Type: String
@@ -91,14 +90,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
-
 ## INPUTS
 
 ## OUTPUTS
 
 ## NOTES
+Author: Kyle Weeks
 
 ## RELATED LINKS
 

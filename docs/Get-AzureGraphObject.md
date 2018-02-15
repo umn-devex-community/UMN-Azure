@@ -14,7 +14,7 @@ Query Azure Graph API for object details
 
 ```
 Get-AzureGraphObject [-accessToken] <String> [[-apiVersion] <String>] [[-batchSize] <Int32>]
- [-objectType] <String> [<CommonParameters>]
+ [-objectType] <String>
 ```
 
 ## DESCRIPTION
@@ -76,7 +76,7 @@ Aliases:
 
 Required: False
 Position: 3
-Default value: 0
+Default value: 200
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -96,9 +96,6 @@ Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
-
-### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

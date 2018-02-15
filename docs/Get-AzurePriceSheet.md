@@ -13,7 +13,7 @@ Get current price sheet from enterprise portal
 ## SYNTAX
 
 ```
-Get-AzurePriceSheet [-key] <String> [-enrollment] <String> [[-billingPeriodID] <String>] [<CommonParameters>]
+Get-AzurePriceSheet [-key] <String> [-enrollment] <String> [[-billingPeriodID] <String>]
 ```
 
 ## DESCRIPTION
@@ -80,14 +80,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
-
 ## INPUTS
 
 ## OUTPUTS
 
 ## NOTES
+Author: Kyle Weeks
 
 ## RELATED LINKS
 
