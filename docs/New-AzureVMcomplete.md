@@ -16,7 +16,7 @@ Build VM
 New-AzureVMcomplete [[-resourceGroupName] <String>] [[-Location] <String>] [[-vm] <String>]
  [[-localUserName] <String>] [[-localPswd] <String>] [[-storageAccountName] <String>]
  [[-storageAccountKey] <String>] [[-vmSize] <String>] [[-sku] <String>] [[-netSecGroup] <String>]
- [[-netSecRG] <String>] [[-virtNetName] <String>] [[-vnetRG] <String>] [<CommonParameters>]
+ [[-netSecRG] <String>] [[-virtNetName] <String>] [[-vnetRG] <String>]
 ```
 
 ## DESCRIPTION
@@ -226,14 +226,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
-
 ## INPUTS
 
 ## OUTPUTS
 
 ## NOTES
+Author: Travis Sobeck
 
 ## RELATED LINKS
 

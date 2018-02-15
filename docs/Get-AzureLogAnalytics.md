@@ -13,7 +13,7 @@ Query Azure Log Analytics
 ## SYNTAX
 
 ```
-Get-AzureLogAnalytics [-workspaceID] <String> [-accessToken] <String> [-query] <String> [<CommonParameters>]
+Get-AzureLogAnalytics [-workspaceID] <String> [-accessToken] <String> [-query] <String>
 ```
 
 ## DESCRIPTION
@@ -61,7 +61,7 @@ Accept wildcard characters: False
 
 ### -query
 A valid Log Analytics query.
-Example = 'AzureDiagnostics | where ResultType == "Failed"'
+Example = 'AzureDiagnostics | where ResultType == "Failed" | where RunbookName_s == "Name of runbook" |where TimeGenerated \> ago(1h)'
 
 ```yaml
 Type: String
@@ -74,9 +74,6 @@ Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
-
-### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

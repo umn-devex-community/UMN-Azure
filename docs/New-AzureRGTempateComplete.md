@@ -16,7 +16,8 @@ Create Resource Group Templete to build VM
 New-AzureRGTempateComplete [[-resourceGroupName] <String>] [[-Location] <String>] [[-vm] <String>]
  [[-localUserName] <String>] [[-localPswd] <String>] [[-storageAccountName] <String>]
  [[-storageAccountKey] <String>] [[-vmSize] <String>] [[-sku] <String>] [[-netSecGroup] <String>]
- [[-netSecRG] <String>] [[-virtNetName] <String>] [[-vnetRG] <String>] [<CommonParameters>]
+ [[-netSecRG] <String>] [[-virtNetName] <String>] [[-vnetRG] <String>] [[-scriptPath] <String>]
+ [[-scriptFile] <String>]
 ```
 
 ## DESCRIPTION
@@ -231,14 +232,42 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+### -scriptPath
+Path in Azure Storeage where Powershell file resides that will be run on vm at build time
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: 
+
+Required: False
+Position: 14
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -scriptFile
+Name of File in scriptPath location that will be run on vm at build time
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: 
+
+Required: False
+Position: 15
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ## INPUTS
 
 ## OUTPUTS
 
 ## NOTES
+Author: Travis Sobeck
 
 ## RELATED LINKS
 

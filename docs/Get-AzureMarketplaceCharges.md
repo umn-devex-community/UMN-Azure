@@ -14,7 +14,7 @@ Get azure marketplace usage
 
 ```
 Get-AzureMarketplaceCharges [-enrollment] <String> [-key] <String> [[-billingPeriodID] <String>]
- [[-startDate] <String>] [[-endDate] <String>] [<CommonParameters>]
+ [[-startDate] <String>] [[-endDate] <String>]
 ```
 
 ## DESCRIPTION
@@ -116,14 +116,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
-
 ## INPUTS
 
 ## OUTPUTS
 
 ## NOTES
+Author: Kyle Weeks
 
 ## RELATED LINKS
 
