@@ -1,7 +1,7 @@
 ---
 external help file: UMN-Azure-help.xml
-Module Name: UMN-Azure
-online version: 
+Module Name: umn-azure
+online version:
 schema: 2.0.0
 ---
 
@@ -16,7 +16,7 @@ Build VM
 New-AzureVMcomplete [[-resourceGroupName] <String>] [[-Location] <String>] [[-vm] <String>]
  [[-localUserName] <String>] [[-localPswd] <String>] [[-storageAccountName] <String>]
  [[-storageAccountKey] <String>] [[-vmSize] <String>] [[-sku] <String>] [[-netSecGroup] <String>]
- [[-netSecRG] <String>] [[-virtNetName] <String>] [[-vnetRG] <String>]
+ [[-netSecRG] <String>] [[-virtNetName] <String>] [[-vnetRG] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,7 +24,7 @@ Build a VM along with required resources
 
 ## EXAMPLES
 
-### -------------------------- EXAMPLE 1 --------------------------
+### EXAMPLE 1
 ```
 $result = New-AzureVMcomplete -ResourceGroupName "VPN-GW" -Location eastus -vmname "mynewtest" -VMSize Basic_A0
 ```
@@ -37,7 +37,7 @@ $result = New-AzureVMcomplete -ResourceGroupName "VPN-GW" -Location eastus -vmna
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 1
@@ -52,7 +52,7 @@ Azure zone, Central US and so forth.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 2
@@ -67,7 +67,7 @@ Name of the VM
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 3
@@ -82,7 +82,7 @@ Name of the new local user
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 4
@@ -97,7 +97,7 @@ Local administrator password
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 5
@@ -112,7 +112,7 @@ Storage account name for VM storage
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 6
@@ -127,7 +127,7 @@ Storage account key
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 7
@@ -142,7 +142,7 @@ Basic size of VM, such as A0
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 8
@@ -157,7 +157,7 @@ OS SKU -- such as 2012-R2-Datacenter
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 9
@@ -172,7 +172,7 @@ network security group - plan ahead
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 10
@@ -187,7 +187,7 @@ network security resource group template
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 11
@@ -202,7 +202,7 @@ Name of virtual network to be access on
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 12
@@ -217,7 +217,7 @@ Name of virtual network gateway resource group
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 13
@@ -225,6 +225,9 @@ Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -234,4 +237,3 @@ Accept wildcard characters: False
 Author: Travis Sobeck
 
 ## RELATED LINKS
-

@@ -1,7 +1,7 @@
 ---
 external help file: UMN-Azure-help.xml
-Module Name: UMN-Azure
-online version: 
+Module Name: umn-azure
+online version:
 schema: 2.0.0
 ---
 
@@ -14,7 +14,7 @@ Get azure usage in a JSON format directly
 
 ```
 Get-AzureUsageJSON [-enrollment] <String> [-key] <String> [[-billingPeriod] <String>] [[-startDate] <String>]
- [[-endDate] <String>]
+ [[-endDate] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -25,17 +25,17 @@ The current month cycle will be retreived.
 
 ## EXAMPLES
 
-### -------------------------- EXAMPLE 1 --------------------------
+### EXAMPLE 1
 ```
 $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber'
 ```
 
-### -------------------------- EXAMPLE 2 --------------------------
+### EXAMPLE 2
 ```
 $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriodID '201701'
 ```
 
-### -------------------------- EXAMPLE 3 --------------------------
+### EXAMPLE 3
 ```
 $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -startDate '20170515' -endDate '20170602'
 ```
@@ -49,7 +49,7 @@ Available form the EA portal.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 1
@@ -64,7 +64,7 @@ API key gathered from the EA portal for use with billing API.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 2
@@ -79,7 +79,7 @@ Accept wildcard characters: False
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 3
@@ -94,7 +94,7 @@ Start date time of the query - ####-##-## year, month, day = 2017-01-28
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 4
@@ -109,7 +109,7 @@ End date time of the query - ####-##-## year, month, day = 2017-01-28
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 5
@@ -117,6 +117,9 @@ Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -126,4 +129,3 @@ Accept wildcard characters: False
 Author: Kyle Weeks
 
 ## RELATED LINKS
-

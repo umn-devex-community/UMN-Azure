@@ -1,7 +1,7 @@
 ---
 external help file: UMN-Azure-help.xml
-Module Name: UMN-Azure
-online version: 
+Module Name: umn-azure
+online version:
 schema: 2.0.0
 ---
 
@@ -17,7 +17,7 @@ New-AzureRGTempateComplete [[-resourceGroupName] <String>] [[-Location] <String>
  [[-localUserName] <String>] [[-localPswd] <String>] [[-storageAccountName] <String>]
  [[-storageAccountKey] <String>] [[-vmSize] <String>] [[-sku] <String>] [[-netSecGroup] <String>]
  [[-netSecRG] <String>] [[-virtNetName] <String>] [[-vnetRG] <String>] [[-scriptPath] <String>]
- [[-scriptFile] <String>]
+ [[-scriptFile] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -25,12 +25,12 @@ Create Resource Group Templete to build VM
 
 ## EXAMPLES
 
-### -------------------------- EXAMPLE 1 --------------------------
+### EXAMPLE 1
 ```
 New-AzureRGTempateComplete -resourceGroupName $resourceGroupName -Location $Location -vm $vm -vmSize $vmSize -storageAccountName $storageAccountName -netSecGroup $netSecGroup -netSecRG $netSecRG -virtNetName $virtNetName -vnetRG $vnetRG -localUserName $localUserName -localPswd $localPswd
 ```
 
-### -------------------------- EXAMPLE 2 --------------------------
+### EXAMPLE 2
 ```
 Another example of how to use this cmdlet
 ```
@@ -43,7 +43,7 @@ Another example of how to use this cmdlet
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 1
@@ -58,7 +58,7 @@ Azure zone, Central US and so forth.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 2
@@ -73,7 +73,7 @@ Name of the VM
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 3
@@ -88,7 +88,7 @@ Name of the new local user
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 4
@@ -103,7 +103,7 @@ Local administrator password
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 5
@@ -118,7 +118,7 @@ Storage account name for VM storage
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 6
@@ -133,7 +133,7 @@ Storage account key
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 7
@@ -148,7 +148,7 @@ Basic size of VM, such as A0
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 8
@@ -163,7 +163,7 @@ OS SKU -- such as 2012-R2-Datacenter
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 9
@@ -178,7 +178,7 @@ network security group - plan ahead
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 10
@@ -193,7 +193,7 @@ network security resource group template
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 11
@@ -208,7 +208,7 @@ Name of virtual network to be access on
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 12
@@ -223,7 +223,7 @@ Name of virtual network gateway resource group
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 13
@@ -238,7 +238,7 @@ Path in Azure Storeage where Powershell file resides that will be run on vm at b
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 14
@@ -253,7 +253,7 @@ Name of File in scriptPath location that will be run on vm at build time
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 15
@@ -261,6 +261,9 @@ Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -270,4 +273,3 @@ Accept wildcard characters: False
 Author: Travis Sobeck
 
 ## RELATED LINKS
-

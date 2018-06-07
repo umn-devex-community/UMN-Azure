@@ -1,7 +1,7 @@
 ---
 external help file: UMN-Azure-help.xml
-Module Name: UMN-Azure
-online version: 
+Module Name: umn-azure
+online version:
 schema: 2.0.0
 ---
 
@@ -14,7 +14,7 @@ Query Azure Graph API for object details
 
 ```
 Get-AzureGraphObject [-accessToken] <String> [[-apiVersion] <String>] [[-batchSize] <Int32>]
- [-objectType] <String>
+ [-objectType] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -22,12 +22,12 @@ Use the $top oData filter to query objects in bulk using paging.
 
 ## EXAMPLES
 
-### -------------------------- EXAMPLE 1 --------------------------
+### EXAMPLE 1
 ```
 $results = Get-AzureGraphObject -accessToken $accessToken -objectType ''
 ```
 
-### -------------------------- EXAMPLE 2 --------------------------
+### EXAMPLE 2
 ```
 $results = Get-AzureGraphObject -accessToken $accessToken -apiVersion 'Beta' -batchSize 500 -objectType ''
 ```
@@ -41,7 +41,7 @@ See Get-AzureOAuthTokenUser as a possible source.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 1
@@ -56,7 +56,7 @@ Some of the API versions in Graph are 'beta' - default to 1.0
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 2
@@ -72,7 +72,7 @@ Microsoft Graph behaviors are per api...
 ```yaml
 Type: Int32
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 3
@@ -88,7 +88,7 @@ Paging with the $top filter is supported for all /users, but the $top filter is 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 4
@@ -96,6 +96,9 @@ Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -105,4 +108,3 @@ Accept wildcard characters: False
 Author: Kyle Weeks
 
 ## RELATED LINKS
-

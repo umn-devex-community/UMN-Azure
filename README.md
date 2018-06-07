@@ -12,6 +12,9 @@ Third on graph API access query.
 
 # Releases
 
+## 1.2.0 6-7-28
+Add OneDrive cmdlets for access through the Graph API.
+
 ## 1.1.1 -- 2-15-18
 Add Code Signing
 

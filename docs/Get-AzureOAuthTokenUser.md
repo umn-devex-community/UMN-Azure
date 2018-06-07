@@ -1,7 +1,7 @@
 ---
 external help file: UMN-Azure-help.xml
-Module Name: UMN-Azure
-online version: 
+Module Name: umn-azure
+online version:
 schema: 2.0.0
 ---
 
@@ -15,7 +15,7 @@ The access token is good for an hour, the refresh token is mostly permanent and 
 
 ```
 Get-AzureOAuthTokenUser [-tenantID] <String> [-clientid] <String> [-accessKey] <String> [-redirectUri] <String>
- [-resource] <Object> [[-prompt] <String>] [[-refreshtoken] <String>]
+ [-resource] <Object> [[-prompt] <String>] [[-refreshtoken] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,12 +23,12 @@ This is based on authenticating against a custom Web/API Application registered 
 
 ## EXAMPLES
 
-### -------------------------- EXAMPLE 1 --------------------------
+### EXAMPLE 1
 ```
 $tokenInfo = Get-AzureOAuthTokenUser -tenantID 'Azure AD Tenant ID' -clientid 'Application ID' -accessKey 'Preset key for app' -redirectUri 'https redirect uri of app' -resource 'MS API Resource'
 ```
 
-### -------------------------- EXAMPLE 2 --------------------------
+### EXAMPLE 2
 ```
 $tokenInfo = Get-AzureOAuthTokenUser -tenantID 'Azure AD Tenant ID' -clientid 'Application ID' -accessKey 'Preset key for app' -redirectUri 'https redirect uri of app' -resource 'MS API Resource' -refreshtoken 'your refresh token from a previous call'
 ```
@@ -41,7 +41,7 @@ Azure AD Directory ID/TenantID
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 1
@@ -56,7 +56,7 @@ Azure AD Custom Application ID
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 2
@@ -71,7 +71,7 @@ Azure AD Custom Application access key
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 3
@@ -86,7 +86,7 @@ For return stream of claims
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 4
@@ -102,7 +102,7 @@ Example = https://api.loganalytics.io, or https://graph.microsoft.com
 ```yaml
 Type: Object
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 5
@@ -118,7 +118,7 @@ none = will never request and rely on SSO (web apps)
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 6
@@ -133,7 +133,7 @@ Supply a refresh token to get a new valid token for use after expiring
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: False
 Position: 7
@@ -141,6 +141,9 @@ Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -152,4 +155,3 @@ Accept wildcard characters: False
 Author: Kyle Weeks
 
 ## RELATED LINKS
-
