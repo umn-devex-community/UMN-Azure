@@ -530,7 +530,6 @@ Function Get-AzureGraphObject{
         if(-not $apiVersion) 
             {$apiVersion='v1.0'}
 
-        $contentType = 'application/json'
         $header = @{"Authorization"="Bearer $accessToken"}
         $uri = "https://graph.microsoft.com/$apiVersion/$objectType`?top eq $batchSize"
         If($objectType -eq 'users')
@@ -563,6 +562,519 @@ Function Get-AzureGraphObject{
         return $results
     }
 
+}
+
+function Get-AzureOneDriveID 
+{
+<#
+    .Synopsis
+        Gets One Drive ID by User
+    
+    .DESCRIPTION
+        Gets One Drive ID by User
+    
+    .PARAMETER accessToken
+        oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
+
+    .PARAMETER apiVersion
+        Defaults to 1.0. Can set for beta or other as they allow.
+
+    .PARAMETER userPrincipalName
+        User Principal Name of the user's one drive.
+
+    .EXAMPLE
+        Get-AzureOneDriveID -accessToken $accessToken -userPrincipalName 'moon@domain.edu'
+            
+    .Notes
+        Author: Kyle Weeks
+#>  
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$accessToken,
+
+    [string]$apiVersion = 'v1.0',
+
+    [Parameter(Mandatory=$true)]
+    [string]$userPrincipalName
+)
+
+    Begin
+    {
+        $header = @{"Authorization"="Bearer $accessToken"}
+    }
+    Process
+    {    
+        $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drives"
+        $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header
+    }
+
+    End
+    {
+        return $return.value.Id
+    }
+}
+
+function Get-AzureOneDriveFiles
+{
+<#
+    .Synopsis
+        Function to query One Drive for files
+    
+    .DESCRIPTION
+        Needed in order to upload large files to One Drive via the Graph API.
+    
+    .PARAMETER accessToken
+        oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
+
+    .PARAMETER apiVersion
+        Defaults to 1.0. Can set for beta or other as they allow.
+
+    .PARAMETER driveID
+        The OneDrive ID of the O365 User. See Get-AzureOneDriveID.
+
+    .PARAMETER itemIDs
+        An array of file/folder item IDs to be downloaded. See Get-AzureOneDriveRootContent as a starting place.
+
+    .PARAMETER outPutPath
+        Local path to store the files.
+
+    .PARAMETER rootCreated
+        A switch for when looping through from the root of a one drive to gather the entire one drive.
+
+    .PARAMETER userPrincipalName
+        The Azure AD UserPrincipalName of the OneDrive account owner.
+
+    .EXAMPLE
+        Get-AzureOneDriveFiles -accessToken $accessToken -driveID $driveID -itemIDs $arrayOfItemIds -outPutPath c:\temp -rootCreated $False -userPrincipalName 'moon@domain.edu'
+            
+    .Notes
+        Author: Kyle Weeks
+#>    
+param (
+    [Parameter(Mandatory=$true)]
+    [string]$accessToken,
+
+    [string]$apiVersion = 'V1.0',
+
+    [Parameter(Mandatory=$true)]
+    [string]$driveID,
+    
+    [Parameter(Mandatory=$true)]
+    [array]$itemIDs,
+
+    [Parameter(Mandatory=$true)]
+    [string]$outPutPath,
+
+    [string]$rootCreated = 'needed',
+
+    [Parameter(Mandatory=$true)]
+    [string]$userPrincipalName
+    )
+
+Begin
+{
+    $user = ($userPrincipalName -split ("@"))[0]
+    $header = @{"Authorization"="Bearer $accessToken"}
+
+    # Check and create output directory
+    If ($outPutPath -notmatch '.+?\\$') {$outPutPath += '\'}
+    Try {Get-ChildItem -path $outputPath\$user -ErrorAction stop}
+    Catch {New-Item -ItemType directory -Path $outPutPath\$user}
+
+    # Get first folder structure of root:/ and create if needed.
+    If($rootCreated -eq 'needed')
+        {
+            $itemIDs | ForEach-Object {
+                $child = $_
+                $return = Get-AzureOneDriveItem -accessToken $accessToken -driveID $driveID -itemID $child
+                
+                # Folder / File Loop
+                if ($return.folder){
+                    $parent = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
+                    $parent = $parent -replace ("/","\")
+                    New-Item -ItemType directory -Path ($parent + '\' + $return.name) -Force
+                    }
+                if ($return.file){
+                    $fileName = $return.name
+                    If ($outPutPath -match '.+?\\$') {$outPutPath = $outPutPath.Substring(0,$outPutPath.Length-1)}
+                    $filePath = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
+                    $filePath = $filePath -replace ("/","\")
+                    $outfile = $filePath + '\' + $fileName
+                    $download = $return.'@microsoft.graph.downloadUrl'
+                    Invoke-WebRequest -Method Get -Uri $download -OutFile $outfile
+                    }   
+                if ($return.package.type)
+                    {
+                        $type = $return.package.type
+                        $location = $return.parentReference
+                        Write-Host "$type found at location $location. Unable to download for user $user"
+                    }
+            }        
+        }
+
+    }
+
+
+Process{
+    Foreach ($PSItem in $itemIDs){    
+            # Get Children of Item
+            $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/items/$PSItem"+"?expand=children(select=id,name)"
+            $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header 
+            $children = $return.children
+
+            # Process each item
+            $children | ForEach-Object{
+                    $child = $_.id
+                    $return = Get-AzureOneDriveItem -accessToken $accessToken -driveID $driveID -itemID $child
+                    
+                    # Folder / File Loop
+                    if ($return.folder){
+                        $parent = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
+                        $parent = $parent -replace ("/","\")
+                        New-Item -ItemType Directory -Path ($parent + '\' + $return.name) -Force
+                        Try {
+                            $newArray = New-Object System.Collections.ArrayList($null)
+                            $return | foreach-object {$null = $newArray.Add($_.id)} 
+                            Start-Sleep -Seconds 1
+                            Get-AzureOneDriveFiles -accessToken $accessToken -driveID $driveID -itemIDs $newArray -user $user -outPutPath $outPutPath -rootCreated 'done'
+                        }
+                        Catch{}                  
+                        }
+                    if ($return.file){
+                            $fileName = $return.name
+                            If ($outPutPath -match '.+?\\$') {$outPutPath = $outPutPath.Substring(0,$outPutPath.Length-1)}
+                            $filePath = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
+                            $filePath = $filePath -replace ("/","\")
+                            $outfile = $filePath + '\' + $fileName
+                            $download = $return.'@microsoft.graph.downloadUrl'
+                            Invoke-WebRequest -Method Get -Uri $download -OutFile $outfile
+                        }
+                    if ($return.package.type)
+                    {
+                        $type = $return.package.type
+                        $location = $return.parentReference
+                        Write-Host "$type found at location $location. Unable to download for user $user"
+                    }       
+                }
+        }
+    }
+end{}
+}
+
+function Get-AzureOneDriveItem
+{
+<#
+    .Synopsis
+        Gets One Drive Item by ID
+    
+    .DESCRIPTION
+        Gets One Drive Item by ID
+    
+    .PARAMETER accessToken
+        oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
+
+    .PARAMETER apiVersion
+        Defaults to 1.0. Can set for beta or other as they allow.
+
+    .PARAMETER driveID
+        The OneDrive ID of the O365 User. See Get-AzureOneDriveID.
+
+    .PARAMETER itemID
+        The itemID of the folder/file.
+
+    .EXAMPLE
+        Get-AzureOneDriveItem -accessToken $accessToken -driveID $driveID -itemID $itemID
+            
+    .Notes
+        Author: Kyle Weeks
+#>  
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$accessToken,
+
+    [string]$apiVersion = 'v1.0',
+
+    [Parameter(Mandatory=$true)]
+    [string]$driveID,
+
+    [Parameter(Mandatory=$true)]
+    [string]$itemID
+)
+Begin{}
+Process
+{
+    $header = @{"Authorization"="Bearer $accessToken"}
+    $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/items/$itemID"
+    $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header
+}
+End{return $return}
+}
+function Get-AzureOneDriveRootContent 
+{
+<#
+    .Synopsis
+        Gets the One Drive Root Content
+    
+    .DESCRIPTION
+        Will get all IDs of folders and files at the root of a one Drive with Child item info.
+    
+    .PARAMETER accessToken
+        oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
+
+    .PARAMETER apiVersion
+        Defaults to 1.0. Can set for beta or other as they allow.
+
+    .PARAMETER driveID
+        The drive ID to be queried.
+
+    .EXAMPLE
+        Get-AzureOneDriveRootContent -accessToken $accessToken -driveID $driveID
+            
+    .Notes
+        Author: Kyle Weeks
+#>  
+[CmdletBinding()]
+param 
+(
+    [Parameter(Mandatory=$true)]
+    [string]$accessToken,
+
+    [string]$apiVersion = 'V1.0',
+
+    [Parameter(Mandatory=$true)]
+    [string]$driveID
+)
+
+    Begin
+    {
+        $header = @{"Authorization"="Bearer $accessToken"}
+    }
+
+    Process
+    {
+        $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/root?expand=children(select=id,name,type,property)"
+        $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header
+    }
+    End
+    {
+        return $return.children
+    }
+}
+
+function New-OneDriveFolder
+{
+<#
+    .Synopsis
+        Creates a new folder
+    
+    .DESCRIPTION
+        Provide a item ID of parent folder or create new folder at root of OneDrive
+    
+    .PARAMETER accessToken
+        oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
+
+    .PARAMETER apiVersion
+        Defaults to 1.0. Can set for beta or other as they allow.
+
+    .PARAMETER folderName
+        Name of the new folder
+
+    .PARAMETER parentID
+        Item of the parent folder
+
+    .PARAMETER root
+        Boolean switch. If true - no parent ID is needed, and will create folder in root of One Drive.
+
+    .PARAMETER userPrincipalName
+        UserPrincipalName of the OneDrive account owner.        
+
+    .EXAMPLE
+        New-OneDriveFolder -accessToken $accessToken -folderName 'New Folder' -root $true -userPrincipalName 'moon@domain.edu'
+
+    .EXAMPLE
+        New-OneDriveFolder -accessToken $accessToken -folderName 'New Folder' -parentID $parentID -userPrincipalName 'moon@domain.edu'
+            
+    .Notes
+        Author: Kyle Weeks
+#>  
+[CmdletBinding()]
+param 
+(
+    [Parameter(Mandatory=$true)]
+    [string]$accessToken,
+
+    [string]$apiVersion = 'V1.0',
+
+    [Parameter(Mandatory=$true)]
+    [string]$folderName,
+
+    [string]$parentID,
+
+    [boolean]$root = $false,
+
+    [Parameter(Mandatory=$true)]
+    [string]$userPrincipalName
+)
+Begin
+{
+    $body = @{folder=@{"@odata.type"="microsoft.graph.folder"};name="$folderName"} |ConvertTo-Json
+    $header = @{"Authorization"="Bearer $accessToken"}
+    If ($root -eq $false)
+    {
+        $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drive/items/$parentID/children"
+    }
+    else 
+    {
+        $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drive/root/children"   
+    }
+    
+    
+}
+Process
+{
+    $return = Invoke-RestMethod -Method Post -Uri $uri -Headers $header -Body $body -ContentType 'application/json'
+}
+End
+{
+    return $return
+}
+
+}
+
+function New-OneDriveLargeFileUpload 
+{
+<#
+    .Synopsis
+        Upload large files to OneDrive
+    
+    .DESCRIPTION
+        Will break down a large file into chunks for upload to OneDrive for Business account. Requires prep work for administrative control.
+    
+    .PARAMETER chunkSize
+        The byte chunk size to break the file into. Has to be a multiple of 327680 or OneDrive API will reject.
+
+    .PARAMETER localFilePath
+        Path to the local file to be uploaded. Include the file name with extension.
+
+    .PARAMETER uploadURL
+        The upload URL provided from the upload session request. See New-AzureOneDriveLargeFileSession call to retrieve.
+
+    .EXAMPLE
+        New-OneDriveLargeFileUpload -localFilePath c:\temp\aVeryLargeFile.vhd -uploadURL $uploadURL
+            
+    .Notes
+        Author: Kyle Weeks
+#>
+param
+(
+    [int]$chunkSize=4915200,
+    
+    [Parameter(Mandatory=$true)]
+    [string]$LocalFilePath,
+
+    [Parameter(Mandatory=$true)]
+    [string]$uploadURL
+)
+Begin
+{    
+    $reader = [System.IO.File]::OpenRead($LocalFilePath)
+    $fileLength = $reader.Length
+    $buffer = New-Object Byte[] $chunkSize
+    $moreChunks = $true
+    $byteCount = 0
+}
+Process
+{    
+    while($moreChunks)
+    {
+        ## Test for end of file
+        If (($reader.Position + $buffer.Length) -gt $fileLength)
+            {
+                $bits = ($fileLength - $reader.Position)
+                $buffer = New-Object Byte[] $bits
+                $bytesRead = $reader.Read($buffer, 0, $bits)
+                $moreChunks = $false
+            }
+        Else {$bytesRead = $reader.Read($buffer, 0, $buffer.Length)} 
+
+        $output = $buffer
+        $contentLength = $bytesread
+        $uploadRange = ($reader.Position -1)
+        $contentRange = "$bytecount"+"-"+$uploadRange+"/$fileLength"
+        $headerUpload = @{
+                "Content-Length"=$contentLength;
+                "Content-Range"="bytes $contentRange"
+                }
+        $return = Invoke-RestMethod -Method Put -Uri $uploadURL -Headers $headerUpload -Body $output
+        $byteCount =  $byteCount + $chunkSize
+        $return.nextExpectedRanges
+
+    }
+}
+End
+{
+    $reader.Close()
+    return $return
+}
+}
+    
+function New-AzureOneDriveLargeFileSession
+{
+<#
+    .Synopsis
+        Generates a One Drive large file upload session.
+    
+    .DESCRIPTION
+        Needed in order to upload large files to One Drive via the Graph API.
+    
+    .PARAMETER accessToken
+        oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
+
+    .PARAMETER apiVersion
+        Defaults to 1.0. Can set for beta or other as they allow.
+
+    .PARAMETER driveID
+        The OneDrive ID of the O365 User. See Get-AzureOneDriveID.
+
+    .PARAMETER OneDriveFilePath
+        The One Drive folder path with file name. "New Folder/Microsoft.jpg"
+
+    .EXAMPLE
+        New-AzureOneDriveLargeFileSession -accessToken $accessToken -driveID $driveID -oneDriveFilePath $oneDriveFilePath
+            
+    .Notes
+        Author: Kyle Weeks
+#>    
+    param
+    (
+        [Parameter(Mandatory=$true)]    
+        [string]$accessToken,
+
+        [string]$apiVersion = "v1.0",
+
+        [Parameter(Mandatory=$true)]
+        [string]$driveID,
+
+        [Parameter(Mandatory=$true)]
+        [string]$OneDriveFilePath
+    )
+Begin
+{
+    $header = @{"Authorization"="Bearer $accessToken"}
+    $method = 'POST'
+    $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/root:/$OneDriveFilePath"+":/createUploadSession"
+}
+Process
+{
+    $response = Invoke-RestMethod -Method $method -Uri $uri -Headers $header
+    $uploadURL = $response.uploadurl
+
+}
+End
+{
+    return $uploadURL
+}
 }
 
 #endregion
@@ -669,7 +1181,10 @@ function Get-AzureOAuthTokenService{
 
         .PARAMETER resource
             Resource to be interacted with. Example = https://api.loganalytics.io. Use the clientID here if authenticating a token to your own custom app.
-                    
+        
+        .PARAMATER scope    
+            An alternate to url resource to provide security scope to actions of an API such as with OneDrive.
+
         .EXAMPLE
             $tokenInfo = Get-AzureOAuthTokenService -tenantID 'Azure AD Tenant ID' -clientid 'Application ID' -accessKey 'Preset key for app' -resource 'MS API Resource'
         
@@ -689,8 +1204,9 @@ function Get-AzureOAuthTokenService{
         [Parameter(Mandatory)]
         [string]$accessKey,
 
-        [Parameter(Mandatory)]
-        $resource
+        [string]$resource,
+
+        [string]$scope = ''
     )     
      
     Begin
@@ -700,7 +1216,11 @@ function Get-AzureOAuthTokenService{
 
     Process
     {
-        $body = @{grant_type="client_credentials";client_id=$clientid;client_secret=$accessKey;resource=$resource}
+        If ($scope -ne '')
+            {$body = @{grant_type="client_credentials";client_id=$clientid;client_secret=$accessKey;scope=$scope}}
+        else 
+            {$body = @{grant_type="client_credentials";client_id=$clientid;client_secret=$accessKey;resource=$resource}}        
+
         $response = Invoke-RestMethod -Method Post -Uri $uri -ContentType "application/x-www-form-urlencoded" -Body $body
         $accessToken = $response.access_token
     }
@@ -765,8 +1285,9 @@ function Get-AzureOAuthTokenUser{
         [Parameter(Mandatory)]
         [string]$redirectUri,
 
-        [Parameter(Mandatory)]
         $resource,
+
+        $scope = '',
 
         [ValidateSet('login','none','consent')]
         [string]$prompt = "consent",
@@ -791,8 +1312,12 @@ function Get-AzureOAuthTokenUser{
             $grantType = "authorization_code"
 
             # Construct the claim authorization endpoint
-            $uri = $authorizeEndpoint+"?client_id=$clientid&response_type=$responseType&resource=$resource&redirect_uri=$redirectUri&prompt=$prompt"
-        
+            If ($scope -ne ''){
+                $uri = $authorizeEndpoint+"?client_id=$clientid&response_type=$responseType&scope=$scope&redirect_uri=$redirectUri&prompt=$prompt"
+            }
+            else {
+                $uri = $authorizeEndpoint+"?client_id=$clientid&response_type=$responseType&resource=$resource&redirect_uri=$redirectUri&prompt=$prompt"
+            }
             # OAuth is generally used interactive for users... not core friendly.
             ## Popup a new IE window, log in, authorize app as needed, and collect claim code
             $ie = New-Object -comObject InternetExplorer.Application
@@ -807,8 +1332,13 @@ function Get-AzureOAuthTokenUser{
 
             # exchange the authorization code for tokens
             $uri = $tokenEndpoint
-            $body = @{client_id=$clientid;grant_type=$grantType;code=$authorizationCode;redirect_uri=$redirectUri;client_secret=$accessKey;resource=$resource}
- 
+            If ($scope -ne ''){
+                $body = @{client_id=$clientid;grant_type=$grantType;code=$authorizationCode;redirect_uri=$redirectUri;client_secret=$accessKey;resource=$resource}
+            }
+            Else {
+                $body = @{client_id=$clientid;grant_type=$grantType;code=$authorizationCode;redirect_uri=$redirectUri;client_secret=$accessKey;resource=$resource}
+            }
+            
             $response = Invoke-RestMethod -Method Post -Uri $uri -ContentType "application/x-www-form-urlencoded" -Body $body
 
             $properties = @{
@@ -841,6 +1371,7 @@ function Get-AzureOAuthTokenUser{
 }
 
 #endregion
+
 
 #region Azure Price Sheets
 
