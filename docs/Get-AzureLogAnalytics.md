@@ -1,7 +1,7 @@
 ---
 external help file: UMN-Azure-help.xml
-Module Name: UMN-Azure
-online version: 
+Module Name: umn-azure
+online version:
 schema: 2.0.0
 ---
 
@@ -13,7 +13,7 @@ Query Azure Log Analytics
 ## SYNTAX
 
 ```
-Get-AzureLogAnalytics [-workspaceID] <String> [-accessToken] <String> [-query] <String>
+Get-AzureLogAnalytics [-workspaceID] <String> [-accessToken] <String> [-query] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -21,7 +21,7 @@ Requires having identity set in Azure AD to allow access to Log Analytics API, a
 
 ## EXAMPLES
 
-### -------------------------- EXAMPLE 1 --------------------------
+### EXAMPLE 1
 ```
 -accessToken $accessToken -query $query
 ```
@@ -34,7 +34,7 @@ The workspaceID reference for this API is the subscription which has the Log Ana
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 1
@@ -50,7 +50,7 @@ See Get-AzureOAuthTokenUser as a possible source.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 2
@@ -66,7 +66,7 @@ Example = 'AzureDiagnostics | where ResultType == "Failed" | where RunbookName_s
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: 
+Aliases:
 
 Required: True
 Position: 3
@@ -74,6 +74,10 @@ Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -83,4 +87,3 @@ Accept wildcard characters: False
 Author: Kyle Weeks
 
 ## RELATED LINKS
-

@@ -5,49 +5,50 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-AzureUsageCSV
+# New-OneDriveLargeFileUpload
 
 ## SYNOPSIS
-Get azure usage directly as a CSV (as if downloading from the web UI)
+Upload large files to OneDrive
 
 ## SYNTAX
 
 ```
-Get-AzureUsageCSV [-enrollment] <String> [-key] <String> [-billingPeriod] <String> [-outputDir] <String>
+New-OneDriveLargeFileUpload [[-chunkSize] <Int32>] [-LocalFilePath] <String> [-uploadURL] <String>
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-There are other options for retrieving usage information.
-Directly as a CSV non-polling, polling, or JSON.
+Will break down a large file into chunks for upload to OneDrive for Business account.
+Requires prep work for administrative control.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-$result = Get-AzureUsageCSV -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriodID '201701' -outputDir 'c:\'
+New-OneDriveLargeFileUpload -localFilePath c:\temp\aVeryLargeFile.vhd -uploadURL $uploadURL
 ```
 
 ## PARAMETERS
 
-### -enrollment
-Your Enterprise Enrollment number.
-Available form the EA portal.
+### -chunkSize
+The byte chunk size to break the file into.
+Has to be a multiple of 327680 or OneDrive API will reject.
 
 ```yaml
-Type: String
+Type: Int32
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 1
-Default value: None
+Default value: 4915200
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -key
-API key gathered from the EA portal for use with billing API.
+### -LocalFilePath
+Path to the local file to be uploaded.
+Include the file name with extension.
 
 ```yaml
 Type: String
@@ -61,8 +62,9 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -billingPeriod
-{{Fill billingPeriod Description}}
+### -uploadURL
+The upload URL provided from the upload session request.
+See New-AzureOneDriveLargeFileSession call to retrieve.
 
 ```yaml
 Type: String
@@ -71,21 +73,6 @@ Aliases:
 
 Required: True
 Position: 3
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -outputDir
-A directory for outputing a CSV of collected data.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 4
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

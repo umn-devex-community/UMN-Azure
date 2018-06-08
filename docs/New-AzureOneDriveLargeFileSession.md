@@ -5,38 +5,32 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-AzureGraphObject
+# New-AzureOneDriveLargeFileSession
 
 ## SYNOPSIS
-Query Azure Graph API for object details
+Generates a One Drive large file upload session.
 
 ## SYNTAX
 
 ```
-Get-AzureGraphObject [-accessToken] <String> [[-apiVersion] <String>] [[-batchSize] <Int32>]
- [-objectType] <String> [<CommonParameters>]
+New-AzureOneDriveLargeFileSession [-accessToken] <String> [[-apiVersion] <String>] [-driveID] <String>
+ [-OneDriveFilePath] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Use the $top oData filter to query objects in bulk using paging.
+Needed in order to upload large files to One Drive via the Graph API.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-$results = Get-AzureGraphObject -accessToken $accessToken -objectType ''
-```
-
-### EXAMPLE 2
-```
-$results = Get-AzureGraphObject -accessToken $accessToken -apiVersion 'Beta' -batchSize 500 -objectType ''
+New-AzureOneDriveLargeFileSession -accessToken $accessToken -driveID $driveID -oneDriveFilePath $oneDriveFilePath
 ```
 
 ## PARAMETERS
 
 ### -accessToken
-An OAuth accessToken.
-See Get-AzureOAuthTokenUser as a possible source.
+oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
 
 ```yaml
 Type: String
@@ -51,7 +45,8 @@ Accept wildcard characters: False
 ```
 
 ### -apiVersion
-Some of the API versions in Graph are 'beta' - default to 1.0
+Defaults to 1.0.
+Can set for beta or other as they allow.
 
 ```yaml
 Type: String
@@ -60,30 +55,30 @@ Aliases:
 
 Required: False
 Position: 2
+Default value: V1.0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -driveID
+The OneDrive ID of the O365 User.
+See Get-AzureOneDriveID.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: 3
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -batchSize
-Used to determine how many records to return per page.
-Microsoft Graph behaviors are per api...
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 3
-Default value: 200
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -objectType
-The object type to query.
-Paging with the $top filter is supported for all /users, but the $top filter is rejected.
+### -OneDriveFilePath
+The One Drive folder path with file name.
+"New Folder/Microsoft.jpg"
 
 ```yaml
 Type: String
