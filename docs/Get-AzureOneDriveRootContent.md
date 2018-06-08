@@ -5,31 +5,32 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-AzureBillingPeriods
+# Get-AzureOneDriveRootContent
 
 ## SYNOPSIS
-Get current available billing periods, and some metadata around them.
+Gets the One Drive Root Content
 
 ## SYNTAX
 
 ```
-Get-AzureBillingPeriods [-key] <String> [-enrollment] <String> [<CommonParameters>]
+Get-AzureOneDriveRootContent [-accessToken] <String> [[-apiVersion] <String>] [-driveID] <String>
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-A call to get available billing periods from your EA portal.
+Will get all IDs of folders and files at the root of a one Drive with Child item info.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-$result =  Get-AzureBillingPeriods -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber'
+Get-AzureOneDriveRootContent -accessToken $accessToken -driveID $driveID
 ```
 
 ## PARAMETERS
 
-### -key
-API key gathered from the EA portal for use with billing API.
+### -accessToken
+oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
 
 ```yaml
 Type: String
@@ -43,9 +44,24 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -enrollment
-Your Enterprise Enrollment number.
-Available form the EA portal.
+### -apiVersion
+Defaults to 1.0.
+Can set for beta or other as they allow.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: V1.0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -driveID
+The drive ID to be queried.
 
 ```yaml
 Type: String
@@ -53,7 +69,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 2
+Position: 3
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

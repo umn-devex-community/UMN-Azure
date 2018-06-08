@@ -15,7 +15,8 @@ The access token is good for an hour, the refresh token is mostly permanent and 
 
 ```
 Get-AzureOAuthTokenUser [-tenantID] <String> [-clientid] <String> [-accessKey] <String> [-redirectUri] <String>
- [-resource] <Object> [[-prompt] <String>] [[-refreshtoken] <String>] [<CommonParameters>]
+ [[-resource] <Object>] [[-scope] <Object>] [[-prompt] <String>] [[-refreshtoken] <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -104,8 +105,23 @@ Type: Object
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 5
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -scope
+{{Fill scope Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -121,7 +137,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 6
+Position: 7
 Default value: Consent
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -136,14 +152,15 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 7
+Position: 8
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

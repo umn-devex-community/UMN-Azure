@@ -14,8 +14,8 @@ The access token is good for an hour, and there is no refresh token.
 ## SYNTAX
 
 ```
-Get-AzureOAuthTokenService [-tenantID] <String> [-clientid] <String> [-accessKey] <String> [-resource] <Object>
- [<CommonParameters>]
+Get-AzureOAuthTokenService [-tenantID] <String> [-clientid] <String> [-accessKey] <String>
+ [[-resource] <String>] [-scope <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -83,19 +83,35 @@ Example = https://api.loganalytics.io.
 Use the clientID here if authenticating a token to your own custom app.
 
 ```yaml
-Type: Object
+Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 4
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -scope
+{{Fill scope Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

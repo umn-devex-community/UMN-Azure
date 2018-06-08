@@ -478,7 +478,8 @@ function Get-AzureGraphUsers
 	}
 }
 
-Function Get-AzureGraphObject{
+Function Get-AzureGraphObject
+{
 
     <#
         .Synopsis
@@ -588,16 +589,17 @@ function Get-AzureOneDriveID
     .Notes
         Author: Kyle Weeks
 #>  
-[CmdletBinding()]
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$accessToken,
 
-    [string]$apiVersion = 'v1.0',
+    param
+        (
+        [Parameter(Mandatory=$true)]
+        [string]$accessToken,
 
-    [Parameter(Mandatory=$true)]
-    [string]$userPrincipalName
-)
+        [string]$apiVersion = 'v1.0',
+
+        [Parameter(Mandatory=$true)]
+        [string]$userPrincipalName
+        )
 
     Begin
     {
@@ -614,7 +616,6 @@ param(
         return $return.value.Id
     }
 }
-
 function Get-AzureOneDriveFiles
 {
 <#
@@ -651,115 +652,116 @@ function Get-AzureOneDriveFiles
     .Notes
         Author: Kyle Weeks
 #>    
-param (
-    [Parameter(Mandatory=$true)]
-    [string]$accessToken,
+    param 
+        (
+        [Parameter(Mandatory=$true)]
+        [string]$accessToken,
 
-    [string]$apiVersion = 'V1.0',
+        [string]$apiVersion = 'V1.0',
 
-    [Parameter(Mandatory=$true)]
-    [string]$driveID,
-    
-    [Parameter(Mandatory=$true)]
-    [array]$itemIDs,
+        [Parameter(Mandatory=$true)]
+        [string]$driveID,
+        
+        [Parameter(Mandatory=$true)]
+        [array]$itemIDs,
 
-    [Parameter(Mandatory=$true)]
-    [string]$outPutPath,
+        [Parameter(Mandatory=$true)]
+        [string]$outPutPath,
 
-    [string]$rootCreated = 'needed',
+        [string]$rootCreated = 'needed',
 
-    [Parameter(Mandatory=$true)]
-    [string]$userPrincipalName
-    )
+        [Parameter(Mandatory=$true)]
+        [string]$userPrincipalName
+        )
 
-Begin
-{
-    $user = ($userPrincipalName -split ("@"))[0]
-    $header = @{"Authorization"="Bearer $accessToken"}
+    Begin
+    {
+        $user = ($userPrincipalName -split ("@"))[0]
+        $header = @{"Authorization"="Bearer $accessToken"}
 
-    # Check and create output directory
-    If ($outPutPath -notmatch '.+?\\$') {$outPutPath += '\'}
-    Try {Get-ChildItem -path $outputPath\$user -ErrorAction stop}
-    Catch {New-Item -ItemType directory -Path $outPutPath\$user}
+        # Check and create output directory
+        If ($outPutPath -notmatch '.+?\\$') {$outPutPath += '\'}
+        Try {Get-ChildItem -path $outputPath\$user -ErrorAction stop}
+        Catch {New-Item -ItemType directory -Path $outPutPath\$user}
 
-    # Get first folder structure of root:/ and create if needed.
-    If($rootCreated -eq 'needed')
-        {
-            $itemIDs | ForEach-Object {
-                $child = $_
-                $return = Get-AzureOneDriveItem -accessToken $accessToken -driveID $driveID -itemID $child
-                
-                # Folder / File Loop
-                if ($return.folder){
-                    $parent = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
-                    $parent = $parent -replace ("/","\")
-                    New-Item -ItemType directory -Path ($parent + '\' + $return.name) -Force
-                    }
-                if ($return.file){
-                    $fileName = $return.name
-                    If ($outPutPath -match '.+?\\$') {$outPutPath = $outPutPath.Substring(0,$outPutPath.Length-1)}
-                    $filePath = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
-                    $filePath = $filePath -replace ("/","\")
-                    $outfile = $filePath + '\' + $fileName
-                    $download = $return.'@microsoft.graph.downloadUrl'
-                    Invoke-WebRequest -Method Get -Uri $download -OutFile $outfile
-                    }   
-                if ($return.package.type)
-                    {
-                        $type = $return.package.type
-                        $location = $return.parentReference
-                        Write-Host "$type found at location $location. Unable to download for user $user"
-                    }
-            }        
-        }
-
-    }
-
-
-Process{
-    Foreach ($PSItem in $itemIDs){    
-            # Get Children of Item
-            $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/items/$PSItem"+"?expand=children(select=id,name)"
-            $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header 
-            $children = $return.children
-
-            # Process each item
-            $children | ForEach-Object{
-                    $child = $_.id
+        # Get first folder structure of root:/ and create if needed.
+        If($rootCreated -eq 'needed')
+            {
+                $itemIDs | ForEach-Object {
+                    $child = $_
                     $return = Get-AzureOneDriveItem -accessToken $accessToken -driveID $driveID -itemID $child
                     
                     # Folder / File Loop
                     if ($return.folder){
                         $parent = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
                         $parent = $parent -replace ("/","\")
-                        New-Item -ItemType Directory -Path ($parent + '\' + $return.name) -Force
-                        Try {
-                            $newArray = New-Object System.Collections.ArrayList($null)
-                            $return | foreach-object {$null = $newArray.Add($_.id)} 
-                            Start-Sleep -Seconds 1
-                            Get-AzureOneDriveFiles -accessToken $accessToken -driveID $driveID -itemIDs $newArray -user $user -outPutPath $outPutPath -rootCreated 'done'
-                        }
-                        Catch{}                  
+                        New-Item -ItemType directory -Path ($parent + '\' + $return.name) -Force
                         }
                     if ($return.file){
-                            $fileName = $return.name
-                            If ($outPutPath -match '.+?\\$') {$outPutPath = $outPutPath.Substring(0,$outPutPath.Length-1)}
-                            $filePath = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
-                            $filePath = $filePath -replace ("/","\")
-                            $outfile = $filePath + '\' + $fileName
-                            $download = $return.'@microsoft.graph.downloadUrl'
-                            Invoke-WebRequest -Method Get -Uri $download -OutFile $outfile
-                        }
+                        $fileName = $return.name
+                        If ($outPutPath -match '.+?\\$') {$outPutPath = $outPutPath.Substring(0,$outPutPath.Length-1)}
+                        $filePath = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
+                        $filePath = $filePath -replace ("/","\")
+                        $outfile = $filePath + '\' + $fileName
+                        $download = $return.'@microsoft.graph.downloadUrl'
+                        Invoke-WebRequest -Method Get -Uri $download -OutFile $outfile
+                        }   
                     if ($return.package.type)
-                    {
-                        $type = $return.package.type
-                        $location = $return.parentReference
-                        Write-Host "$type found at location $location. Unable to download for user $user"
-                    }       
-                }
+                        {
+                            $type = $return.package.type
+                            $location = $return.parentReference
+                            Write-Host "$type found at location $location. Unable to download for user $user"
+                        }
+                }        
+            }
+
         }
-    }
-end{}
+
+
+    Process{
+        Foreach ($PSItem in $itemIDs){    
+                # Get Children of Item
+                $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/items/$PSItem"+"?expand=children(select=id,name)"
+                $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header 
+                $children = $return.children
+
+                # Process each item
+                $children | ForEach-Object{
+                        $child = $_.id
+                        $return = Get-AzureOneDriveItem -accessToken $accessToken -driveID $driveID -itemID $child
+                        
+                        # Folder / File Loop
+                        if ($return.folder){
+                            $parent = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
+                            $parent = $parent -replace ("/","\")
+                            New-Item -ItemType Directory -Path ($parent + '\' + $return.name) -Force
+                            Try {
+                                $newArray = New-Object System.Collections.ArrayList($null)
+                                $return | foreach-object {$null = $newArray.Add($_.id)} 
+                                Start-Sleep -Seconds 1
+                                Get-AzureOneDriveFiles -accessToken $accessToken -driveID $driveID -itemIDs $newArray -user $user -outPutPath $outPutPath -rootCreated 'done'
+                            }
+                            Catch{}                  
+                            }
+                        if ($return.file){
+                                $fileName = $return.name
+                                If ($outPutPath -match '.+?\\$') {$outPutPath = $outPutPath.Substring(0,$outPutPath.Length-1)}
+                                $filePath = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
+                                $filePath = $filePath -replace ("/","\")
+                                $outfile = $filePath + '\' + $fileName
+                                $download = $return.'@microsoft.graph.downloadUrl'
+                                Invoke-WebRequest -Method Get -Uri $download -OutFile $outfile
+                            }
+                        if ($return.package.type)
+                        {
+                            $type = $return.package.type
+                            $location = $return.parentReference
+                            Write-Host "$type found at location $location. Unable to download for user $user"
+                        }       
+                    }
+            }
+        }
+    end{}
 }
 
 function Get-AzureOneDriveItem
@@ -789,27 +791,29 @@ function Get-AzureOneDriveItem
     .Notes
         Author: Kyle Weeks
 #>  
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$accessToken,
+    param
+        (
+        [Parameter(Mandatory=$true)]
+        [string]$accessToken,
 
-    [string]$apiVersion = 'v1.0',
+        [string]$apiVersion = 'v1.0',
 
-    [Parameter(Mandatory=$true)]
-    [string]$driveID,
+        [Parameter(Mandatory=$true)]
+        [string]$driveID,
 
-    [Parameter(Mandatory=$true)]
-    [string]$itemID
-)
-Begin{}
-Process
-{
-    $header = @{"Authorization"="Bearer $accessToken"}
-    $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/items/$itemID"
-    $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header
+        [Parameter(Mandatory=$true)]
+        [string]$itemID
+        )
+    Begin{}
+    Process
+        {
+            $header = @{"Authorization"="Bearer $accessToken"}
+            $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/items/$itemID"
+            $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header
+        }
+    End{return $return}
 }
-End{return $return}
-}
+
 function Get-AzureOneDriveRootContent 
 {
 <#
@@ -834,17 +838,17 @@ function Get-AzureOneDriveRootContent
     .Notes
         Author: Kyle Weeks
 #>  
-[CmdletBinding()]
-param 
-(
-    [Parameter(Mandatory=$true)]
-    [string]$accessToken,
 
-    [string]$apiVersion = 'V1.0',
+    param 
+        (
+        [Parameter(Mandatory=$true)]
+        [string]$accessToken,
 
-    [Parameter(Mandatory=$true)]
-    [string]$driveID
-)
+        [string]$apiVersion = 'V1.0',
+
+        [Parameter(Mandatory=$true)]
+        [string]$driveID
+        )
 
     Begin
     {
@@ -898,47 +902,47 @@ function New-OneDriveFolder
     .Notes
         Author: Kyle Weeks
 #>  
-[CmdletBinding()]
-param 
-(
-    [Parameter(Mandatory=$true)]
-    [string]$accessToken,
 
-    [string]$apiVersion = 'V1.0',
+    param 
+        (
+        [Parameter(Mandatory=$true)]
+        [string]$accessToken,
 
-    [Parameter(Mandatory=$true)]
-    [string]$folderName,
+        [string]$apiVersion = 'V1.0',
 
-    [string]$parentID,
+        [Parameter(Mandatory=$true)]
+        [string]$folderName,
 
-    [boolean]$root = $false,
+        [string]$parentID,
 
-    [Parameter(Mandatory=$true)]
-    [string]$userPrincipalName
-)
-Begin
-{
-    $body = @{folder=@{"@odata.type"="microsoft.graph.folder"};name="$folderName"} |ConvertTo-Json
-    $header = @{"Authorization"="Bearer $accessToken"}
-    If ($root -eq $false)
+        [boolean]$root = $false,
+
+        [Parameter(Mandatory=$true)]
+        [string]$userPrincipalName
+        )
+    Begin
     {
-        $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drive/items/$parentID/children"
+        $body = @{folder=@{"@odata.type"="microsoft.graph.folder"};name="$folderName"} |ConvertTo-Json
+        $header = @{"Authorization"="Bearer $accessToken"}
+        If ($root -eq $false)
+        {
+            $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drive/items/$parentID/children"
+        }
+        else 
+        {
+            $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drive/root/children"   
+        }
+        
+        
     }
-    else 
+    Process
     {
-        $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drive/root/children"   
+        $return = Invoke-RestMethod -Method Post -Uri $uri -Headers $header -Body $body -ContentType 'application/json'
     }
-    
-    
-}
-Process
-{
-    $return = Invoke-RestMethod -Method Post -Uri $uri -Headers $header -Body $body -ContentType 'application/json'
-}
-End
-{
-    return $return
-}
+    End
+    {
+        return $return
+    }
 
 }
 
@@ -966,57 +970,57 @@ function New-OneDriveLargeFileUpload
     .Notes
         Author: Kyle Weeks
 #>
-param
-(
-    [int]$chunkSize=4915200,
-    
-    [Parameter(Mandatory=$true)]
-    [string]$LocalFilePath,
+    param
+        (
+        [int]$chunkSize=4915200,
+        
+        [Parameter(Mandatory=$true)]
+        [string]$LocalFilePath,
 
-    [Parameter(Mandatory=$true)]
-    [string]$uploadURL
-)
-Begin
-{    
-    $reader = [System.IO.File]::OpenRead($LocalFilePath)
-    $fileLength = $reader.Length
-    $buffer = New-Object Byte[] $chunkSize
-    $moreChunks = $true
-    $byteCount = 0
-}
-Process
-{    
-    while($moreChunks)
-    {
-        ## Test for end of file
-        If (($reader.Position + $buffer.Length) -gt $fileLength)
-            {
-                $bits = ($fileLength - $reader.Position)
-                $buffer = New-Object Byte[] $bits
-                $bytesRead = $reader.Read($buffer, 0, $bits)
-                $moreChunks = $false
-            }
-        Else {$bytesRead = $reader.Read($buffer, 0, $buffer.Length)} 
-
-        $output = $buffer
-        $contentLength = $bytesread
-        $uploadRange = ($reader.Position -1)
-        $contentRange = "$bytecount"+"-"+$uploadRange+"/$fileLength"
-        $headerUpload = @{
-                "Content-Length"=$contentLength;
-                "Content-Range"="bytes $contentRange"
-                }
-        $return = Invoke-RestMethod -Method Put -Uri $uploadURL -Headers $headerUpload -Body $output
-        $byteCount =  $byteCount + $chunkSize
-        $return.nextExpectedRanges
-
+        [Parameter(Mandatory=$true)]
+        [string]$uploadURL
+        )
+    Begin
+    {    
+        $reader = [System.IO.File]::OpenRead($LocalFilePath)
+        $fileLength = $reader.Length
+        $buffer = New-Object Byte[] $chunkSize
+        $moreChunks = $true
+        $byteCount = 0
     }
-}
-End
-{
-    $reader.Close()
-    return $return
-}
+    Process
+    {    
+        while($moreChunks)
+        {
+            ## Test for end of file
+            If (($reader.Position + $buffer.Length) -gt $fileLength)
+                {
+                    $bits = ($fileLength - $reader.Position)
+                    $buffer = New-Object Byte[] $bits
+                    $bytesRead = $reader.Read($buffer, 0, $bits)
+                    $moreChunks = $false
+                }
+            Else {$bytesRead = $reader.Read($buffer, 0, $buffer.Length)} 
+
+            $output = $buffer
+            $contentLength = $bytesread
+            $uploadRange = ($reader.Position -1)
+            $contentRange = "$bytecount"+"-"+$uploadRange+"/$fileLength"
+            $headerUpload = @{
+                    "Content-Length"=$contentLength;
+                    "Content-Range"="bytes $contentRange"
+                    }
+            $return = Invoke-RestMethod -Method Put -Uri $uploadURL -Headers $headerUpload -Body $output
+            $byteCount =  $byteCount + $chunkSize
+            $return.nextExpectedRanges
+
+        }
+    }
+    End
+    {
+        $reader.Close()
+        return $return
+    }
 }
     
 function New-AzureOneDriveLargeFileSession
@@ -1047,7 +1051,7 @@ function New-AzureOneDriveLargeFileSession
         Author: Kyle Weeks
 #>    
     param
-    (
+        (
         [Parameter(Mandatory=$true)]    
         [string]$accessToken,
 
@@ -1058,23 +1062,23 @@ function New-AzureOneDriveLargeFileSession
 
         [Parameter(Mandatory=$true)]
         [string]$OneDriveFilePath
-    )
-Begin
-{
-    $header = @{"Authorization"="Bearer $accessToken"}
-    $method = 'POST'
-    $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/root:/$OneDriveFilePath"+":/createUploadSession"
-}
-Process
-{
-    $response = Invoke-RestMethod -Method $method -Uri $uri -Headers $header
-    $uploadURL = $response.uploadurl
+        )
+    Begin
+    {
+        $header = @{"Authorization"="Bearer $accessToken"}
+        $method = 'POST'
+        $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/root:/$OneDriveFilePath"+":/createUploadSession"
+    }
+    Process
+    {
+        $response = Invoke-RestMethod -Method $method -Uri $uri -Headers $header
+        $uploadURL = $response.uploadurl
 
-}
-End
-{
-    return $uploadURL
-}
+    }
+    End
+    {
+        return $uploadURL
+    }
 }
 
 #endregion
