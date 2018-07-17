@@ -12,7 +12,10 @@ Third on graph API access query.
 
 # Releases
 
-## 1.2.0 6-7-28
+## 1.2.1 7-17-18
+Add LogAnalytic write data functions.
+
+## 1.2.0 6-7-18
 Add OneDrive cmdlets for access through the Graph API.
 
 ## 1.1.1 -- 2-15-18
