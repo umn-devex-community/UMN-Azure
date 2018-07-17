@@ -408,6 +408,136 @@ function Get-AzureLogAnalytics
 	}
 }
 
+function Get-AzureLogAnalyticsSignature
+{
+    <#
+        .Synopsis
+            Create signature for posting to Log Analytics
+        
+        .DESCRIPTION
+            Create signature for posting to Log Analytics
+        
+        .PARAMETER data
+            JSON formatted data to be posted to Log Analytics
+
+        .PARAMETER primaryKey
+            The Primary Workspace KEY for your workspace.
+
+        .PARAMETER workspaceID
+            Workspace ID associated to your Log Analytics space.
+
+        .EXAMPLE
+            $signature = Get-AzureLogAnalyticsSignature -date $json -primaryKey $key -workspaceID $workspaceID
+               
+        .Notes
+            Author: Kyle Weeks
+    #>
+
+    param 
+    (
+        [Parameter(Mandatory=$true)]
+        [string] $data,
+
+        [Parameter(Mandatory=$true)]
+        [string] $primaryKey,
+
+        [Parameter(Mandatory=$true)]
+        [string] $workspaceID
+    )
+    
+    Begin
+    {
+        $method = "POST"
+        $contentType = "application/json"
+        $api = "/api/logs"        
+    }
+
+    Process
+    {
+        $xMSDate = "x-ms-date:" + ([DateTime]::UtcNow.ToString("r"))
+        $contentLength = $data.Length
+        $stringToSign = $method + "`n" + $contentLength + "`n" + $contentType + "`n" + $xMSDate + "`n" + $api
+        $stringBytes = [Text.Encoding]::UTF8.GetBytes($stringToSign)
+        $primaryKeyBytes = [Convert]::FromBase64String($primaryKey)
+        
+        $hmac256 = New-Object System.Security.Cryptography.HMACSHA256
+        $hmac256.Key = $primaryKeyBytes
+        $hash = $hmac256.ComputeHash($stringBytes)
+        $hashBase64 = [Convert]::ToBase64String($hash)
+        $signature = 'SharedKey {0}:{1}' -f $workspaceID,$hashBase64
+    }
+
+    End
+    {
+        return $signature
+	}
+}
+
+
+function New-AzureLogAnalyticsData
+{
+    <#
+        .Synopsis
+            For posting data to Log Analytics.
+        
+        .DESCRIPTION
+            The post portion of pushing data to Log Analytics. Requires a signed signature.
+
+        .PARAMETER data
+            JSON Formatted data to be sent to Log Analytics custom log.
+        
+        .PARAMETER logtype
+            The custom log name for indexing. Will have _CL appended to it automatically by Log Analytics (Custom Log)
+
+        .PARAMETER primaryKey
+            The Primary Workspace KEY for your workspace.
+
+        .PARAMETER workspaceID
+            Workspace ID associated to your Log Analytics space.
+
+        .EXAMPLE
+            New-AzureLogAnalyticsData -data $data -logType $logType -primaryKey $primaryKey -workspaceID $workspaceID
+               
+        .Notes
+            Author: Kyle Weeks
+    #>
+
+    param 
+    (
+        [Parameter(Mandatory=$true)]
+        [string] $data,
+        
+        [Parameter(Mandatory=$true)]
+        [string] $logType,
+ 
+        [Parameter(Mandatory=$true)]
+        [string] $primaryKey,       
+
+        [Parameter(Mandatory=$true)]
+        [string] $workspaceID
+    )
+    
+    Begin
+    {
+        $method = "POST"
+        $contentType = "application/json"
+        $api = "/api/logs"        
+        $uri = "https://" + $workspaceID + ".ods.opinsights.azure.com" + $api + "?api-version=2016-04-01"
+        $date = [DateTime]::UtcNow.ToString("r")
+        $signature = Get-AzureLogAnalyticsSignature -data $data -primaryKey $primaryKey -workspaceID $workspaceID
+        $headers = @{"Authorization" = $signature;"Log-Type" = $logType;"x-ms-date" = $date;"time-generated-field"=$date}
+    }
+
+    Process
+    {
+        $response = Invoke-WebRequest -Uri $uri -Method $method -ContentType $contentType -Headers $headers -Body $data -UseBasicParsing      
+    }
+
+    End
+    {
+        return $response
+	}
+}
 
 
 #endregion
@@ -434,7 +564,7 @@ function Get-AzureGraphUsers
             A valid user userPrincipalName
 
         .PARAMETER query
-            Optional to query specified information about the user object.
+            Optional to query specified information in relation to the user object.
 
         .EXAMPLE
             $result = Get-AzureGraphUsers -accessToken $accessToken -userPrincipalName 'jemina@somedomain.onmicrosoft.com' -query
@@ -451,14 +581,13 @@ function Get-AzureGraphUsers
         [Parameter(Mandatory=$true)]
         [string] $accessToken,
 
-        [ValidateSet('owndedDevices','registeredDevices','manager','directReports','memberOf','createdObjects','owndedObjects','licenseDetails','extensions','messages','mailFolders','calendar','calendars','calendarGroups','calendarView','events','people','contacts','contactFolders','inferenceClassification','photo','photos','drive','drives','planner','onenote')]
         [string]$query
     )
     
     Begin
     {
         $header = @{"Authorization"="Bearer $accessToken"}
-        $users = @{}
+        $response = @{}
     }
 
     Process
@@ -468,13 +597,13 @@ function Get-AzureGraphUsers
                 $results = $null
                 $uri = "https://graph.microsoft.com/v1.0/users/$PSItem/$query"
                 $results = Invoke-RestMethod -Method Get -Uri $uri -Headers $header
-                $users.Add($PSItem,$results)
+                $response.Add($PSItem,$results)
             }
     }
 
     End
     {
-        return $users
+        return $response
 	}
 }
 
