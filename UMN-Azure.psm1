@@ -1230,7 +1230,7 @@ function Get-AzureMarketplaceCharges
         .PARAMETER enrollment
             Your Enterprise Enrollment number. Available form the EA portal.
 
-        .PARAMETER billingPeriodID
+        .PARAMETER billingPeriodDate
             An optional parameter to specify that you wish to get from the following year and month. Format YYYYMM
         
         .PARAMETER startDate
@@ -1243,7 +1243,7 @@ function Get-AzureMarketplaceCharges
             $result = Get-AzureMarketplaceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' 
         
         .EXAMPLE
-            $result = Get-AzureMarketplaceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriodID '201701'
+            $result = Get-AzureMarketplaceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriodDate '201701'
         
         .EXAMPLE
             $result = Get-AzureMarketplaceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -startDate '20170515' -endDate '20170602'
@@ -1260,7 +1260,7 @@ function Get-AzureMarketplaceCharges
         [Parameter(Mandatory=$true)]
         [string] $key,
 
-        [string]$billingPeriodID,
+        [string]$billingPeriodDate,
 
         [ValidateLength(1,10)]
         [string]$startDate,
@@ -1272,15 +1272,83 @@ function Get-AzureMarketplaceCharges
     Begin{
     $header = @{"authorization"="bearer $key"}
 
-    if ($billingPeriodID -eq '') {$uri = "https://consumption.azure.com/v2/enrollments/$enrollment/marketplacecharges"}
-    Else {$uri = "https://consumption.azure.com/v2/enrollments/$enrollment/billingPeriods/$billingPeriodID/marketplacecharges"}
+    if ($billingPeriodID -eq '') {$uri = "https://consumption.azure.com/v3/enrollments/$enrollment/marketplacecharges"}
+    Else {$uri = "https://consumption.azure.com/v3/enrollments/$enrollment/billingPeriods/$billingPeriodDate/marketplacecharges"}
 
-    if ($startDate -ne '') {if ($endDate -ne ''){$uri = "https://consumption.azure.com/v2/enrollments/$enrollment/marketplacechargesbycustomdate?startTime=$startDate&endTime=$endDate"}}
+    if ($startDate -ne '') {if ($endDate -ne ''){$uri = "https://consumption.azure.com/v3/enrollments/$enrollment/marketplacechargesbycustomdate?startTime=$startDate&endTime=$endDate"}}
     }
 
     Process
     {
         $response = Invoke-WebRequest $uri -Headers $header -ErrorAction Stop
+        $content = $response.Content |ConvertFrom-Json
+        
+    }
+
+    End
+    {
+        If($content){return $content}
+	}
+}
+
+#endregion
+
+#region Azure Reserved Instance billing
+function Get-AzureReservedInstanceCharges
+{
+    <#
+        .Synopsis
+            Get azure reserved instance charges
+        
+        .DESCRIPTION
+            For getting reserved instance charges
+        
+        .PARAMETER key
+            API key gathered from the EA portal for use with billing API.
+
+        .PARAMETER enrollment
+            Your Enterprise Enrollment number. Available form the EA portal.
+
+        .PARAMETER billingPeriod
+            Used to calculate the first and last day of month. Format yyyy-MM
+        
+        .EXAMPLE
+            $result = Get-Get-AzureReservedInstanceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriod '2019-01'
+
+        .Notes
+            Author: Kyle Weeks
+    #>
+
+    param 
+    (
+        [Parameter(Mandatory=$true)]
+        [string] $enrollment,
+
+        [Parameter(Mandatory=$true)]
+        [string] $key,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateLength(1,7)]
+        [string]$billingPeriod
+    )
+    
+    Begin{
+        $header = @{"authorization"="bearer $key"}
+
+        $date = get-date -date $billingPeriod
+        $year = $date.Year
+        $month = $date.Month
+        $nextMonth = $date.AddMonths(1)
+        $lastday = $nextMonth.AddTicks(-1)
+        $endDay = get-date -date $lastDay -format yyyy-MM-dd
+        $startDay = Get-Date -Year $year -Month $month -Day 1 -Format yyyy-MM-dd
+
+        $uri = "https://consumption.azure.com/v3/enrollments/$enrollment/reservationcharges?startDate=$startDay&endDate=$endDay"
+    }
+
+    Process
+    {
+        $response = Invoke-RestMethod -method get $uri -Headers $header
     }
 
     End
@@ -1288,7 +1356,6 @@ function Get-AzureMarketplaceCharges
         return $response
 	}
 }
-
 #endregion
 
 #region Azure OAuth authentication
@@ -1634,7 +1701,7 @@ function Get-AzureUsageJSON
         .PARAMETER enrollment
             Your Enterprise Enrollment number. Available form the EA portal.
 
-        .PARAMETER billingPeriodID
+        .PARAMETER billingPeriod
             An optional parameter to specify that you wish to get from the following year and month. Format YYYYMM
 
         .PARAMETER startDate
@@ -1647,7 +1714,7 @@ function Get-AzureUsageJSON
             $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' 
         
         .EXAMPLE
-            $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriodID '201701'
+            $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriod '201701'
         
         .EXAMPLE
             $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -startDate '20170515' -endDate '20170602'
@@ -1676,10 +1743,10 @@ function Get-AzureUsageJSON
     Begin{
         $header = @{"authorization"="bearer $key"}
 
-        If ($billingPeriod -eq ''){$uri = "https://consumption.azure.com/v2/enrollments/$enrollment/usagedetails"}
-        Else {$uri = "https://consumption.azure.com/v2/enrollments/$enrollment/billingPeriods/$billingPeriod/usagedetails"}
+        If ($billingPeriod -eq ''){$uri = "https://consumption.azure.com/v3/enrollments/$enrollment/usagedetails"}
+        Else {$uri = "https://consumption.azure.com/v3/enrollments/$enrollment/billingPeriods/$billingPeriod/usagedetails"}
 
-        if ($startDate -ne '') {if ($endDate -ne ''){$uri = "https://consumption.azure.com/v2/enrollments/$enrollment/usagedetailsbycustomdate?startTime=$startDate&endTime=$endDate"}}
+        if ($startDate -ne '') {if ($endDate -ne ''){$uri = "https://consumption.azure.com/v3/enrollments/$enrollment/usagedetailsbycustomdate?startTime=$startDate&endTime=$endDate"}}
     
     }
 
