@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with Foobar.  If not, see <http://www.gnu.org/licenses/>. 
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
 #region Basic Azure VM build
 
@@ -22,7 +22,7 @@ function New-AzureRGTempateComplete
     <#
         .Synopsis
             Create Resource Group Templete to build VM
-        
+
         .DESCRIPTION
             Create Resource Group Templete to build VM
 
@@ -63,8 +63,8 @@ function New-AzureRGTempateComplete
             Name of virtual network to be access on
 
         .PARAMETER vnetRG
-            Name of virtual network gateway resource group    
-                   
+            Name of virtual network gateway resource group
+
         .PARAMETER scriptPath
             Path in Azure Storeage where Powershell file resides that will be run on vm at build time
 
@@ -73,10 +73,10 @@ function New-AzureRGTempateComplete
 
         .EXAMPLE
             New-AzureRGTempateComplete -resourceGroupName $resourceGroupName -Location $Location -vm $vm -vmSize $vmSize -storageAccountName $storageAccountName -netSecGroup $netSecGroup -netSecRG $netSecRG -virtNetName $virtNetName -vnetRG $vnetRG -localUserName $localUserName -localPswd $localPswd
-        
+
         .EXAMPLE
             Another example of how to use this cmdlet
-                    
+
         .Notes
             Author: Travis Sobeck
     #>
@@ -101,7 +101,7 @@ function New-AzureRGTempateComplete
 
         [ValidateNotNullOrEmpty()]
         [string]$storageAccountName,
-        
+
         [ValidateNotNullOrEmpty()]
         [string]$storageAccountKey,
 
@@ -116,7 +116,7 @@ function New-AzureRGTempateComplete
         [string]$virtNetName,
 
         [string]$vnetRG,
-        
+
         [string]$scriptPath,
 
         [string]$scriptFile
@@ -164,7 +164,7 @@ function New-AzureRGTempateComplete
     }
 
     $pubIpTemplate = @{type = "Microsoft.Network/publicIpAddresses";name = $pubIPName;apiVersion = "2015-06-15";location = $location;
-       properties = @{publicIpAllocationMethod = "Dynamic";dnsSettings = @{domainNameLabel = $pubDNSName}} 
+       properties = @{publicIpAllocationMethod = "Dynamic";dnsSettings = @{domainNameLabel = $pubDNSName}}
     }
 
     @{'$schema'='http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#';contentVersion="1.0.0.0";
@@ -172,7 +172,7 @@ function New-AzureRGTempateComplete
         variables = @{};
         resources = @($vmTemplate;$customScript;$netInterfaceTemplate;$pubIpTemplate);
         outputs = @{};
-    } | ConvertTo-Json -Depth 7 | Out-File -FilePath .\$vm.json -Force 
+    } | ConvertTo-Json -Depth 7 | Out-File -FilePath .\$vm.json -Force
 
     Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile .\$vm.json -Mode Incremental -Verbose
 
@@ -184,7 +184,7 @@ function New-AzureVMcomplete
     <#
         .Synopsis
             Build VM
-        
+
         .DESCRIPTION
             Build a VM along with required resources
 
@@ -225,8 +225,8 @@ function New-AzureVMcomplete
             Name of virtual network to be access on
 
         .PARAMETER vnetRG
-            Name of virtual network gateway resource group    
-                
+            Name of virtual network gateway resource group
+
         .EXAMPLE
             $result = New-AzureVMcomplete -ResourceGroupName "VPN-GW" -Location eastus -vmname "mynewtest" -VMSize Basic_A0
 
@@ -253,7 +253,7 @@ function New-AzureVMcomplete
 
         [ValidateNotNullOrEmpty()]
         [string]$storageAccountName,
-        
+
         [ValidateNotNullOrEmpty()]
         [string]$storageAccountKey,
 
@@ -267,7 +267,7 @@ function New-AzureVMcomplete
 
         [string]$virtNetName,
 
-        [string]$vnetRG        
+        [string]$vnetRG
 
     )
 
@@ -281,10 +281,10 @@ function Remove-AzureVMcomplete
     <#
         .Synopsis
             Delete VM
-        
+
         .DESCRIPTION
             Delete a VM and its NIC/PublicIP/osDisk
-        
+
         .PARAMETER resourceGroupName
             The name of the resource group the VM belongs to
 
@@ -296,7 +296,7 @@ function Remove-AzureVMcomplete
 
         .EXAMPLE
             $result = Remove-AzureVMcomplete -ResourceGroupName "VPN-GW" -vm "mynewtest"
-            
+
         .Notes
             Author: Travis Sobeck
     #>
@@ -357,10 +357,10 @@ function Get-AzureLogAnalytics
     <#
         .Synopsis
             Query Azure Log Analytics
-        
+
         .DESCRIPTION
             Requires having identity set in Azure AD to allow access to Log Analytics API, and an Azure AD Application registered to get an API OAuth token from.
-        
+
         .PARAMETER workspaceID
             The workspaceID reference for this API is the subscription which has the Log Analytics account.
 
@@ -371,13 +371,13 @@ function Get-AzureLogAnalytics
             A valid Log Analytics query. Example = 'AzureDiagnostics | where ResultType == "Failed" | where RunbookName_s == "Name of runbook" |where TimeGenerated > ago(1h)'
 
         .EXAMPLE
-            $result = Get-AzureLogAnalytics -workspaceID <Subscription ID> -accessToken $accessToken -query $query 
-               
+            $result = Get-AzureLogAnalytics -workspaceID <Subscription ID> -accessToken $accessToken -query $query
+
         .Notes
             Author: Kyle Weeks
     #>
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true)]
         [string] $workspaceID,
@@ -388,7 +388,7 @@ function Get-AzureLogAnalytics
         [Parameter(Mandatory=$true)]
         [string] $query
     )
-    
+
     Begin
     {
         $contentType = 'application/json'
@@ -413,10 +413,10 @@ function Get-AzureLogAnalyticsSignature
     <#
         .Synopsis
             Create signature for posting to Log Analytics
-        
+
         .DESCRIPTION
             Create signature for posting to Log Analytics
-        
+
         .PARAMETER data
             JSON formatted data to be posted to Log Analytics
 
@@ -428,12 +428,12 @@ function Get-AzureLogAnalyticsSignature
 
         .EXAMPLE
             $signature = Get-AzureLogAnalyticsSignature -date $json -primaryKey $key -workspaceID $workspaceID
-               
+
         .Notes
             Author: Kyle Weeks
     #>
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true)]
         [string] $data,
@@ -444,12 +444,12 @@ function Get-AzureLogAnalyticsSignature
         [Parameter(Mandatory=$true)]
         [string] $workspaceID
     )
-    
+
     Begin
     {
         $method = "POST"
         $contentType = "application/json"
-        $api = "/api/logs"        
+        $api = "/api/logs"
     }
 
     Process
@@ -459,7 +459,7 @@ function Get-AzureLogAnalyticsSignature
         $stringToSign = $method + "`n" + $contentLength + "`n" + $contentType + "`n" + $xMSDate + "`n" + $api
         $stringBytes = [Text.Encoding]::UTF8.GetBytes($stringToSign)
         $primaryKeyBytes = [Convert]::FromBase64String($primaryKey)
-        
+
         $hmac256 = New-Object System.Security.Cryptography.HMACSHA256
         $hmac256.Key = $primaryKeyBytes
         $hash = $hmac256.ComputeHash($stringBytes)
@@ -479,13 +479,13 @@ function New-AzureLogAnalyticsData
     <#
         .Synopsis
             For posting data to Log Analytics.
-        
+
         .DESCRIPTION
             The post portion of pushing data to Log Analytics. Requires a signed signature.
 
         .PARAMETER data
             JSON Formatted data to be sent to Log Analytics custom log.
-        
+
         .PARAMETER logtype
             The custom log name for indexing. Will have _CL appended to it automatically by Log Analytics (Custom Log)
 
@@ -497,31 +497,31 @@ function New-AzureLogAnalyticsData
 
         .EXAMPLE
             New-AzureLogAnalyticsData -data $data -logType $logType -primaryKey $primaryKey -workspaceID $workspaceID
-               
+
         .Notes
             Author: Kyle Weeks
     #>
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true)]
         [string] $data,
-        
+
         [Parameter(Mandatory=$true)]
         [string] $logType,
- 
+
         [Parameter(Mandatory=$true)]
-        [string] $primaryKey,       
+        [string] $primaryKey,
 
         [Parameter(Mandatory=$true)]
         [string] $workspaceID
     )
-    
+
     Begin
     {
         $method = "POST"
         $contentType = "application/json"
-        $api = "/api/logs"        
+        $api = "/api/logs"
         $uri = "https://" + $workspaceID + ".ods.opinsights.azure.com" + $api + "?api-version=2016-04-01"
         $date = [DateTime]::UtcNow.ToString("r")
         $signature = Get-AzureLogAnalyticsSignature -data $data -primaryKey $primaryKey -workspaceID $workspaceID
@@ -530,7 +530,7 @@ function New-AzureLogAnalyticsData
 
     Process
     {
-        $response = Invoke-WebRequest -Uri $uri -Method $method -ContentType $contentType -Headers $headers -Body $data -UseBasicParsing      
+        $response = Invoke-WebRequest -Uri $uri -Method $method -ContentType $contentType -Headers $headers -Body $data -UseBasicParsing
     }
 
     End
@@ -553,7 +553,7 @@ function Get-AzureGraphUsers
     <#
         .Synopsis
             Query Azure Graph API for basic user details
-        
+
         .DESCRIPTION
             Requires having identity set in Azure AD to allow access to Graph API, and an Azure AD Application registered to get an API OAuth token from.
 
@@ -568,12 +568,12 @@ function Get-AzureGraphUsers
 
         .EXAMPLE
             $result = Get-AzureGraphUsers -accessToken $accessToken -userPrincipalName 'jemina@somedomain.onmicrosoft.com' -query
-               
+
         .Notes
             Author: Kyle Weeks
     #>
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [array] $userPrincipalNames,
@@ -583,7 +583,7 @@ function Get-AzureGraphUsers
 
         [string]$query
     )
-    
+
     Begin
     {
         $header = @{"Authorization"="Bearer $accessToken"}
@@ -613,7 +613,7 @@ Function Get-AzureGraphObject
     <#
         .Synopsis
             Query Azure Graph API for object details
-        
+
         .DESCRIPTION
             Use the $top oData filter to query objects in bulk using paging.
 
@@ -625,7 +625,7 @@ Function Get-AzureGraphObject
 
         .PARAMETER batchSize
             Used to determine how many records to return per page. Microsoft Graph behaviors are per api...
-            
+
         .PARAMETER objectType
             The object type to query.
             Paging with the $top filter is supported for all /users, but the $top filter is rejected.
@@ -644,20 +644,20 @@ Function Get-AzureGraphObject
         (
         [Parameter(Mandatory=$true)]
         [string] $accessToken,
-        
+
         [Parameter(Mandatory=$false)]
         [string]$apiVersion,
-        
+
         [Parameter(Mandatory=$false)]
         [int]$batchSize = '200',
 
         [Parameter(Mandatory=$true)]
         [string]$objectType
         )
-  
+
     Begin
     {
-        if(-not $apiVersion) 
+        if(-not $apiVersion)
             {$apiVersion='v1.0'}
 
         $header = @{"Authorization"="Bearer $accessToken"}
@@ -694,15 +694,15 @@ Function Get-AzureGraphObject
 
 }
 
-function Get-AzureOneDriveID 
+function Get-AzureOneDriveID
 {
 <#
     .Synopsis
         Gets One Drive ID by User
-    
+
     .DESCRIPTION
         Gets One Drive ID by User
-    
+
     .PARAMETER accessToken
         oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
 
@@ -714,10 +714,10 @@ function Get-AzureOneDriveID
 
     .EXAMPLE
         Get-AzureOneDriveID -accessToken $accessToken -userPrincipalName 'moon@domain.edu'
-            
+
     .Notes
         Author: Kyle Weeks
-#>  
+#>
 
     param
         (
@@ -735,7 +735,7 @@ function Get-AzureOneDriveID
         $header = @{"Authorization"="Bearer $accessToken"}
     }
     Process
-    {    
+    {
         $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drives"
         $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header
     }
@@ -750,10 +750,10 @@ function Get-AzureOneDriveFiles
 <#
     .Synopsis
         Function to query One Drive for files
-    
+
     .DESCRIPTION
         Needed in order to upload large files to One Drive via the Graph API.
-    
+
     .PARAMETER accessToken
         oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
 
@@ -777,11 +777,11 @@ function Get-AzureOneDriveFiles
 
     .EXAMPLE
         Get-AzureOneDriveFiles -accessToken $accessToken -driveID $driveID -itemIDs $arrayOfItemIds -outPutPath c:\temp -rootCreated $False -userPrincipalName 'moon@domain.edu'
-            
+
     .Notes
         Author: Kyle Weeks
-#>    
-    param 
+#>
+    param
         (
         [Parameter(Mandatory=$true)]
         [string]$accessToken,
@@ -790,7 +790,7 @@ function Get-AzureOneDriveFiles
 
         [Parameter(Mandatory=$true)]
         [string]$driveID,
-        
+
         [Parameter(Mandatory=$true)]
         [array]$itemIDs,
 
@@ -819,7 +819,7 @@ function Get-AzureOneDriveFiles
                 $itemIDs | ForEach-Object {
                     $child = $_
                     $return = Get-AzureOneDriveItem -accessToken $accessToken -driveID $driveID -itemID $child
-                    
+
                     # Folder / File Loop
                     if ($return.folder){
                         $parent = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
@@ -834,31 +834,31 @@ function Get-AzureOneDriveFiles
                         $outfile = $filePath + '\' + $fileName
                         $download = $return.'@microsoft.graph.downloadUrl'
                         Invoke-WebRequest -Method Get -Uri $download -OutFile $outfile
-                        }   
+                        }
                     if ($return.package.type)
                         {
                             $type = $return.package.type
                             $location = $return.parentReference
                             Write-Host "$type found at location $location. Unable to download for user $user"
                         }
-                }        
+                }
             }
 
         }
 
 
     Process{
-        Foreach ($PSItem in $itemIDs){    
+        Foreach ($PSItem in $itemIDs){
                 # Get Children of Item
                 $uri = "https://graph.microsoft.com/$apiVersion/drives/$driveID/items/$PSItem"+"?expand=children(select=id,name)"
-                $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header 
+                $return = Invoke-RestMethod -Method Get -Uri $uri -Headers $header
                 $children = $return.children
 
                 # Process each item
                 $children | ForEach-Object{
                         $child = $_.id
                         $return = Get-AzureOneDriveItem -accessToken $accessToken -driveID $driveID -itemID $child
-                        
+
                         # Folder / File Loop
                         if ($return.folder){
                             $parent = $return.parentReference.path -replace ("/drives/$driveID/root:","$outPutPath\$user")
@@ -866,11 +866,11 @@ function Get-AzureOneDriveFiles
                             New-Item -ItemType Directory -Path ($parent + '\' + $return.name) -Force
                             Try {
                                 $newArray = New-Object System.Collections.ArrayList($null)
-                                $return | foreach-object {$null = $newArray.Add($_.id)} 
+                                $return | foreach-object {$null = $newArray.Add($_.id)}
                                 Start-Sleep -Seconds 1
                                 Get-AzureOneDriveFiles -accessToken $accessToken -driveID $driveID -itemIDs $newArray -user $user -outPutPath $outPutPath -rootCreated 'done'
                             }
-                            Catch{}                  
+                            Catch{}
                             }
                         if ($return.file){
                                 $fileName = $return.name
@@ -886,7 +886,7 @@ function Get-AzureOneDriveFiles
                             $type = $return.package.type
                             $location = $return.parentReference
                             Write-Host "$type found at location $location. Unable to download for user $user"
-                        }       
+                        }
                     }
             }
         }
@@ -898,10 +898,10 @@ function Get-AzureOneDriveItem
 <#
     .Synopsis
         Gets One Drive Item by ID
-    
+
     .DESCRIPTION
         Gets One Drive Item by ID
-    
+
     .PARAMETER accessToken
         oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
 
@@ -916,10 +916,10 @@ function Get-AzureOneDriveItem
 
     .EXAMPLE
         Get-AzureOneDriveItem -accessToken $accessToken -driveID $driveID -itemID $itemID
-            
+
     .Notes
         Author: Kyle Weeks
-#>  
+#>
     param
         (
         [Parameter(Mandatory=$true)]
@@ -943,15 +943,15 @@ function Get-AzureOneDriveItem
     End{return $return}
 }
 
-function Get-AzureOneDriveRootContent 
+function Get-AzureOneDriveRootContent
 {
 <#
     .Synopsis
         Gets the One Drive Root Content
-    
+
     .DESCRIPTION
         Will get all IDs of folders and files at the root of a one Drive with Child item info.
-    
+
     .PARAMETER accessToken
         oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
 
@@ -963,12 +963,12 @@ function Get-AzureOneDriveRootContent
 
     .EXAMPLE
         Get-AzureOneDriveRootContent -accessToken $accessToken -driveID $driveID
-            
+
     .Notes
         Author: Kyle Weeks
-#>  
+#>
 
-    param 
+    param
         (
         [Parameter(Mandatory=$true)]
         [string]$accessToken,
@@ -1000,10 +1000,10 @@ function New-OneDriveFolder
 <#
     .Synopsis
         Creates a new folder
-    
+
     .DESCRIPTION
         Provide a item ID of parent folder or create new folder at root of OneDrive
-    
+
     .PARAMETER accessToken
         oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
 
@@ -1020,19 +1020,19 @@ function New-OneDriveFolder
         Boolean switch. If true - no parent ID is needed, and will create folder in root of One Drive.
 
     .PARAMETER userPrincipalName
-        UserPrincipalName of the OneDrive account owner.        
+        UserPrincipalName of the OneDrive account owner.
 
     .EXAMPLE
         New-OneDriveFolder -accessToken $accessToken -folderName 'New Folder' -root $true -userPrincipalName 'moon@domain.edu'
 
     .EXAMPLE
         New-OneDriveFolder -accessToken $accessToken -folderName 'New Folder' -parentID $parentID -userPrincipalName 'moon@domain.edu'
-            
+
     .Notes
         Author: Kyle Weeks
-#>  
+#>
 
-    param 
+    param
         (
         [Parameter(Mandatory=$true)]
         [string]$accessToken,
@@ -1057,12 +1057,12 @@ function New-OneDriveFolder
         {
             $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drive/items/$parentID/children"
         }
-        else 
+        else
         {
-            $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drive/root/children"   
+            $uri = "https://graph.microsoft.com/$apiVersion/users/$userPrincipalName/drive/root/children"
         }
-        
-        
+
+
     }
     Process
     {
@@ -1075,15 +1075,15 @@ function New-OneDriveFolder
 
 }
 
-function New-OneDriveLargeFileUpload 
+function New-OneDriveLargeFileUpload
 {
 <#
     .Synopsis
         Upload large files to OneDrive
-    
+
     .DESCRIPTION
         Will break down a large file into chunks for upload to OneDrive for Business account. Requires prep work for administrative control.
-    
+
     .PARAMETER chunkSize
         The byte chunk size to break the file into. Has to be a multiple of 327680 or OneDrive API will reject.
 
@@ -1095,14 +1095,14 @@ function New-OneDriveLargeFileUpload
 
     .EXAMPLE
         New-OneDriveLargeFileUpload -localFilePath c:\temp\aVeryLargeFile.vhd -uploadURL $uploadURL
-            
+
     .Notes
         Author: Kyle Weeks
 #>
     param
         (
         [int]$chunkSize=4915200,
-        
+
         [Parameter(Mandatory=$true)]
         [string]$LocalFilePath,
 
@@ -1110,7 +1110,7 @@ function New-OneDriveLargeFileUpload
         [string]$uploadURL
         )
     Begin
-    {    
+    {
         $reader = [System.IO.File]::OpenRead($LocalFilePath)
         $fileLength = $reader.Length
         $buffer = New-Object Byte[] $chunkSize
@@ -1118,7 +1118,7 @@ function New-OneDriveLargeFileUpload
         $byteCount = 0
     }
     Process
-    {    
+    {
         while($moreChunks)
         {
             ## Test for end of file
@@ -1129,7 +1129,7 @@ function New-OneDriveLargeFileUpload
                     $bytesRead = $reader.Read($buffer, 0, $bits)
                     $moreChunks = $false
                 }
-            Else {$bytesRead = $reader.Read($buffer, 0, $buffer.Length)} 
+            Else {$bytesRead = $reader.Read($buffer, 0, $buffer.Length)}
 
             $output = $buffer
             $contentLength = $bytesread
@@ -1151,16 +1151,16 @@ function New-OneDriveLargeFileUpload
         return $return
     }
 }
-    
+
 function New-AzureOneDriveLargeFileSession
 {
 <#
     .Synopsis
         Generates a One Drive large file upload session.
-    
+
     .DESCRIPTION
         Needed in order to upload large files to One Drive via the Graph API.
-    
+
     .PARAMETER accessToken
         oAuth Access token with API permissions allowed for One Drive on the https://graph.microsoft.com resource.
 
@@ -1175,13 +1175,13 @@ function New-AzureOneDriveLargeFileSession
 
     .EXAMPLE
         New-AzureOneDriveLargeFileSession -accessToken $accessToken -driveID $driveID -oneDriveFilePath $oneDriveFilePath
-            
+
     .Notes
         Author: Kyle Weeks
-#>    
+#>
     param
         (
-        [Parameter(Mandatory=$true)]    
+        [Parameter(Mandatory=$true)]
         [string]$accessToken,
 
         [string]$apiVersion = "v1.0",
@@ -1220,10 +1220,10 @@ function Get-AzureMarketplaceCharges
     <#
         .Synopsis
             Get azure marketplace usage
-        
+
         .DESCRIPTION
             For getting marketplace usage data.
-        
+
         .PARAMETER key
             API key gathered from the EA portal for use with billing API.
 
@@ -1232,27 +1232,27 @@ function Get-AzureMarketplaceCharges
 
         .PARAMETER billingPeriodDate
             An optional parameter to specify that you wish to get from the following year and month. Format YYYYMM
-        
+
         .PARAMETER startDate
             Start date time of the query - ####-##-## year, month, day = 2017-01-28
-        
+
         .PARAMETER endDate
             End date time of the query - ####-##-## year, month, day = 2017-01-28
-        
+
         .EXAMPLE
-            $result = Get-AzureMarketplaceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' 
-        
+            $result = Get-AzureMarketplaceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber'
+
         .EXAMPLE
             $result = Get-AzureMarketplaceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriodDate '201701'
-        
+
         .EXAMPLE
             $result = Get-AzureMarketplaceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -startDate '20170515' -endDate '20170602'
-            
+
         .Notes
             Author: Kyle Weeks
     #>
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true)]
         [string] $enrollment,
@@ -1268,7 +1268,7 @@ function Get-AzureMarketplaceCharges
         [ValidateLength(1,10)]
         [string]$endDate
     )
-    
+
     Begin{
     $header = @{"authorization"="bearer $key"}
 
@@ -1280,14 +1280,12 @@ function Get-AzureMarketplaceCharges
 
     Process
     {
-        $response = Invoke-WebRequest $uri -Headers $header -ErrorAction Stop
-        $content = $response.Content |ConvertFrom-Json
-        
+        $response = Invoke-RestMethod $uri -Headers $header
     }
 
     End
     {
-        If($content){return $content}
+        return $response
 	}
 }
 
@@ -1299,10 +1297,10 @@ function Get-AzureReservedInstanceCharges
     <#
         .Synopsis
             Get azure reserved instance charges
-        
+
         .DESCRIPTION
             For getting reserved instance charges
-        
+
         .PARAMETER key
             API key gathered from the EA portal for use with billing API.
 
@@ -1311,7 +1309,7 @@ function Get-AzureReservedInstanceCharges
 
         .PARAMETER billingPeriod
             Used to calculate the first and last day of month. Format yyyy-MM
-        
+
         .EXAMPLE
             $result = Get-Get-AzureReservedInstanceCharges -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriod '2019-01'
 
@@ -1319,7 +1317,7 @@ function Get-AzureReservedInstanceCharges
             Author: Kyle Weeks
     #>
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true)]
         [string] $enrollment,
@@ -1331,7 +1329,7 @@ function Get-AzureReservedInstanceCharges
         [ValidateLength(1,7)]
         [string]$billingPeriod
     )
-    
+
     Begin{
         $header = @{"authorization"="bearer $key"}
 
@@ -1364,7 +1362,7 @@ function Get-AzureOAuthTokenService{
     <#
         .Synopsis
            Get Valid OAuth Token.  The access token is good for an hour, and there is no refresh token.
-        
+
         .DESCRIPTION
             This OAuth token is intended for use with CLI, automation, and service calls. No user interaction is required.
             Requires an application to be registered in Azure AD with appropriate API permissions configured.
@@ -1381,13 +1379,13 @@ function Get-AzureOAuthTokenService{
 
         .PARAMETER resource
             Resource to be interacted with. Example = https://api.loganalytics.io. Use the clientID here if authenticating a token to your own custom app.
-        
-        .PARAMATER scope    
+
+        .PARAMATER scope
             An alternate to url resource to provide security scope to actions of an API such as with OneDrive.
 
         .EXAMPLE
             $tokenInfo = Get-AzureOAuthTokenService -tenantID 'Azure AD Tenant ID' -clientid 'Application ID' -accessKey 'Preset key for app' -resource 'MS API Resource'
-        
+
         .Notes
             Author: Kyle Weeks
     #>
@@ -1407,8 +1405,8 @@ function Get-AzureOAuthTokenService{
         [string]$resource,
 
         [string]$scope = ''
-    )     
-     
+    )
+
     Begin
     {
         $uri = "https://login.microsoftonline.com/$tenantID/oauth2/token"
@@ -1418,8 +1416,8 @@ function Get-AzureOAuthTokenService{
     {
         If ($scope -ne '')
             {$body = @{grant_type="client_credentials";client_id=$clientid;client_secret=$accessKey;scope=$scope}}
-        else 
-            {$body = @{grant_type="client_credentials";client_id=$clientid;client_secret=$accessKey;resource=$resource}}        
+        else
+            {$body = @{grant_type="client_credentials";client_id=$clientid;client_secret=$accessKey;resource=$resource}}
 
         $response = Invoke-RestMethod -Method Post -Uri $uri -ContentType "application/x-www-form-urlencoded" -Body $body
         $accessToken = $response.access_token
@@ -1435,7 +1433,7 @@ function Get-AzureOAuthTokenUser{
     <#
         .Synopsis
            Get Valid OAuth Token.  The access token is good for an hour, the refresh token is mostly permanent and can be used to get a new access token without having to re-authenticate
-        
+
         .DESCRIPTION
             This is based on authenticating against a custom Web/API Application registered in Azure AD which has permissions to Azure AD, Azure Management, and other APIs.
 
@@ -1459,10 +1457,10 @@ function Get-AzureOAuthTokenUser{
 
         .PARAMETER prompt
             Define if your app login should prompt the user for consent in the Azure portal on login. none = will never request and rely on SSO (web apps)
-                    
+
         .EXAMPLE
             $tokenInfo = Get-AzureOAuthTokenUser -tenantID 'Azure AD Tenant ID' -clientid 'Application ID' -accessKey 'Preset key for app' -redirectUri 'https redirect uri of app' -resource 'MS API Resource'
-        
+
         .EXAMPLE
             $tokenInfo = Get-AzureOAuthTokenUser -tenantID 'Azure AD Tenant ID' -clientid 'Application ID' -accessKey 'Preset key for app' -redirectUri 'https redirect uri of app' -resource 'MS API Resource' -refreshtoken 'your refresh token from a previous call'
 
@@ -1493,8 +1491,8 @@ function Get-AzureOAuthTokenUser{
         [string]$prompt = "consent",
 
         [string]$refreshtoken
-        )     
-     
+        )
+
     Begin
     {
         # Build Azure REST Endpoints
@@ -1538,7 +1536,7 @@ function Get-AzureOAuthTokenUser{
             Else {
                 $body = @{client_id=$clientid;grant_type=$grantType;code=$authorizationCode;redirect_uri=$redirectUri;client_secret=$accessKey;resource=$resource}
             }
-            
+
             $response = Invoke-RestMethod -Method Post -Uri $uri -ContentType "application/x-www-form-urlencoded" -Body $body
 
             $properties = @{
@@ -1553,7 +1551,7 @@ function Get-AzureOAuthTokenUser{
             $grantType = "refresh_token"
             $uri = $tokenEndpoint
             $body = @{client_id=$clientid;grant_type=$grantType;client_secret=$accessKey;refresh_token=$refreshtoken}
- 
+
             $response = Invoke-RestMethod -Method Post -Uri $uri -ContentType "application/x-www-form-urlencoded" -Body $body
             $properties = @{
                 accessToken = $response.access_token
@@ -1579,10 +1577,10 @@ function Get-AzurePriceSheet {
     <#
         .Synopsis
             Get current price sheet from enterprise portal
-        
+
         .DESCRIPTION
             Use this call to get a price sheet of resources from the EA portal using an API key
-        
+
         .PARAMETER key
             API key gathered from the EA portal for use with billing API.
 
@@ -1594,7 +1592,7 @@ function Get-AzurePriceSheet {
 
         .EXAMPLE
             $result = Get-AzurePriceSheet -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber'
-        
+
         .EXAMPLE
             $result = Get-AzurePriceSheet -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriodID '201701'
 
@@ -1637,10 +1635,10 @@ function Get-AzureBillingPeriods {
     <#
         .Synopsis
             Get current available billing periods, and some metadata around them.
-    
+
         .DESCRIPTION
             A call to get available billing periods from your EA portal.
-        
+
         .PARAMETER key
             API key gathered from the EA portal for use with billing API.
 
@@ -1649,13 +1647,13 @@ function Get-AzureBillingPeriods {
 
         .EXAMPLE
             $result =  Get-AzureBillingPeriods -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber'
-        
+
         .Notes
             Author: Kyle Weeks
     #>
 
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true)]
         [string]$key,
@@ -1672,7 +1670,7 @@ function Get-AzureBillingPeriods {
     Process
     {
         $response = Invoke-WebRequest -Uri $uri -Headers $header
-        $return = $response.Content |ConvertFrom-Json 
+        $return = $response.Content |ConvertFrom-Json
     }
 
     End
@@ -1690,7 +1688,7 @@ function Get-AzureUsageJSON
     <#
         .Synopsis
             Get azure usage in a JSON format directly
-        
+
         .DESCRIPTION
             There are other options for retrieving usage information. Directly as a CSV non-polling, polling, or JSON.
             If no billing period is included. The current month cycle will be retreived.
@@ -1706,16 +1704,16 @@ function Get-AzureUsageJSON
 
         .PARAMETER startDate
             Start date time of the query - ####-##-## year, month, day = 2017-01-28
-        
+
         .PARAMETER endDate
-            End date time of the query - ####-##-## year, month, day = 2017-01-28        
-       
+            End date time of the query - ####-##-## year, month, day = 2017-01-28
+
         .EXAMPLE
-            $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' 
-        
+            $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber'
+
         .EXAMPLE
             $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriod '201701'
-        
+
         .EXAMPLE
             $result = Get-AzureUsageJSON -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -startDate '20170515' -endDate '20170602'
 
@@ -1723,7 +1721,7 @@ function Get-AzureUsageJSON
             Author: Kyle Weeks
     #>
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true)]
         [string] $enrollment,
@@ -1747,7 +1745,7 @@ function Get-AzureUsageJSON
         Else {$uri = "https://consumption.azure.com/v3/enrollments/$enrollment/billingPeriods/$billingPeriod/usagedetails"}
 
         if ($startDate -ne '') {if ($endDate -ne ''){$uri = "https://consumption.azure.com/v3/enrollments/$enrollment/usagedetailsbycustomdate?startTime=$startDate&endTime=$endDate"}}
-    
+
     }
 
     Process
@@ -1755,13 +1753,11 @@ function Get-AzureUsageJSON
         $usage = @()
         while ($uri -ne $null)
 	    {
-		    $response = Invoke-WebRequest $uri -Headers $header -ErrorAction Stop
-		    if ($response.StatusCode -eq 200) {
-			    $usage += ($response.Content | ConvertFrom-Json).Data
+		    $response = Invoke-RestMethod $uri -Headers $header
+            $usage += $response.data
 
-			    # get next page link - loop for more data
-			    $uri = ($response.Content | ConvertFrom-Json).nextLink
-		    }
+            If($response.nextLink){$uri = $response.nextlink}
+            Else{$uri = $null}
 	    }
     }
 
@@ -1776,10 +1772,10 @@ function Get-AzureUsageCSV
     <#
         .Synopsis
             Get azure usage directly as a CSV (as if downloading from the web UI)
-        
+
         .DESCRIPTION
             There are other options for retrieving usage information. Directly as a CSV non-polling, polling, or JSON.
-        
+
         .PARAMETER key
             API key gathered from the EA portal for use with billing API.
 
@@ -1791,7 +1787,7 @@ function Get-AzureUsageCSV
 
         .PARAMETER outputDir
             A directory for outputing a CSV of collected data.
- 
+
         .EXAMPLE
         $result = Get-AzureUsageCSV -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -billingPeriodID '201701' -outputDir 'c:\'
 
@@ -1799,7 +1795,7 @@ function Get-AzureUsageCSV
             Author: Kyle Weeks
     #>
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true)]
         [string] $enrollment,
@@ -1838,12 +1834,12 @@ function Get-AzureUsageCSVcustomDate
     <#
         .Synopsis
             Get azure usage in a CSV format directly - providing a custom date range
-        
+
         .DESCRIPTION
             There are other options for retrieving usage information. Directly as a CSV non-polling, polling, or JSON.
             This method requests a custom data file be generated (up to 36 months of data). It is saved to a blob storage point.
             The function will poll that location until it is available, then output the csv.
-        
+
         .PARAMETER key
             API key gathered from the EA portal for use with billing API.
 
@@ -1852,13 +1848,13 @@ function Get-AzureUsageCSVcustomDate
 
         .PARAMETER billingPeriodID
             An optional parameter to specify that you wish to get from the following year and month. Format YYYYMM
-        
+
         .PARAMETER startDate
             Start date time of the query - ####-##-## year, month, day = 2017-01-28
-        
+
         .PARAMETER endDate
-            End date time of the query - ####-##-## year, month, day = 2017-01-28  
-        
+            End date time of the query - ####-##-## year, month, day = 2017-01-28
+
         .EXAMPLE
             $result = Get-AzureUsageCSV -key 'apiKeyFromEAPortal' -enrollment 'EAEnrollmentNumber' -startDate '20170515' -endDate '20170602' -outputDir 'c:\'
 
@@ -1866,7 +1862,7 @@ function Get-AzureUsageCSVcustomDate
             Author: Kyle Weeks
     #>
 
-    param 
+    param
     (
         [Parameter(Mandatory=$true)]
         [string] $enrollment,
@@ -1902,7 +1898,7 @@ function Get-AzureUsageCSVcustomDate
         while ($status -eq '')
             {
             $test = Invoke-WebRequest -Method get -Uri ($temp.reportUrl) -Headers $header
-            $json = $test.Content |Convertfrom-Json    
+            $json = $test.Content |Convertfrom-Json
             $status = $json.status
             }
 
@@ -1917,5 +1913,5 @@ function Get-AzureUsageCSVcustomDate
         return $results
     }
 }
- 
+
 #endregion
