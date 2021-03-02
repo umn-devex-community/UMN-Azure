@@ -12,6 +12,14 @@ Third on graph API access query.
 
 # Releases
 
+## 1.2.4 3-2-21
+
+Add cmdlets for Consumption API. Get-AzureReservedInstanceConsumption,
+Get-AzureMarketplaceConsumption, and Get-AzureEnrollmentConsumption.
+All require a user_impersonation accessToken. See Az Cli for such as
+az login -u user -p pass
+az account get-access-token
+
 ## 1.2.3 12-30-19
 Update azure billing api to use invoke-restmethod.
 

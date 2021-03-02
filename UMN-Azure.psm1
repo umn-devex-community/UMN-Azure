@@ -1914,4 +1914,221 @@ function Get-AzureUsageCSVcustomDate
     }
 }
 
+function Get-AzureEnrollmentConsumption
+{
+    <#
+        .Synopsis
+            Get azure usage in a JSON format
+
+        .DESCRIPTION
+            This is using the modern Consumption API
+
+        .PARAMETER accessToken
+            accessToken for access to Consumption API
+
+        .PARAMETER enrollment
+            Your Enterprise Enrollment number. Available form the EA portal.
+
+        .PARAMETER billingPeriod
+            An optional parameter to specify that you wish to get from the following year and month. Format YYYYMM
+
+        .EXAMPLE
+            $result = Get-AzureEnrollmentConsumption -accessToken $token -enrollment 'EAEnrollmentNumber'
+
+        .EXAMPLE
+            $result = Get-AzureEnrollmentConsumption -accessToken $token -enrollment 'EAEnrollmentNumber' -billingPeriod '201701'
+
+        .EXAMPLE
+            $result = Get-AzureEnrollmentConsumption -accessToken $token -enrollment 'EAEnrollmentNumber' -startDate '20170515' -endDate '20170602'
+
+        .Notes
+            Author: Kyle Weeks
+    #>
+
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [string] $enrollment,
+
+        [Parameter(Mandatory=$true)]
+        [string] $accessToken,
+
+        [string]$billingPeriod ## year + month
+    )
+
+    Begin{
+        $header = @{"authorization"="bearer $accessToken"}
+
+        If ($billingPeriod -eq ''){
+            $scope = "/providers/Microsoft.Billing/billingAccounts/$enrollment"
+            $uri = "https://management.azure.com/$scope/providers/Microsoft.Consumption/usageDetails?api-version=2019-10-01"
+        }
+        Else {
+            $scope = "/providers/Microsoft.Billing/billingAccounts/$enrollment/providers/Microsoft.Billing/billingPeriods/$billingPeriod"
+            $uri = "https://management.azure.com/$scope/providers/Microsoft.Consumption/usageDetails?api-version=2019-10-01"
+        }
+    }
+
+    Process
+    {
+        $usage = @()
+        while ($uri)
+	    {
+		    $response = Invoke-RestMethod $uri -Headers $header -method Get
+            $usage += $response.value.properties
+
+            If($response.nextLink){$uri = $response.nextlink}
+            Else{$uri = $null}
+	    }
+    }
+
+    End
+    {
+        return $usage
+    }
+}
+function Get-AzureMarketplaceConsumption
+{
+    <#
+        .Synopsis
+            Get azure marketplace consumption in a JSON format
+
+        .DESCRIPTION
+            Using the modern consumption API
+
+        .PARAMETER accessToken
+            accessToken for access to Consumption API
+
+        .PARAMETER enrollment
+            Your Enterprise Enrollment number. Available form the EA portal.
+
+        .PARAMETER billingPeriod
+            An optional parameter to specify that you wish to get from the following year and month. Format YYYYMM
+
+        .EXAMPLE
+            $result = Get-AzureEnrollmentConsumption -accessToken $token -enrollment 'EAEnrollmentNumber'
+
+        .EXAMPLE
+            $result = Get-AzureEnrollmentConsumption -accessToken $token -enrollment 'EAEnrollmentNumber' -billingPeriod '201701'
+
+        .Notes
+            Author: Kyle Weeks
+    #>
+
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [string] $enrollment,
+
+        [Parameter(Mandatory=$true)]
+        [string] $accessToken,
+
+        [string]$billingPeriod ## year + month
+    )
+
+    Begin{
+        $header = @{"authorization"="bearer $accessToken"}
+
+        If ($billingPeriod -eq ''){
+            $scope = "/providers/Microsoft.Billing/billingAccounts/$enrollment"
+            $uri = "https://management.azure.com/$scope/providers/Microsoft.Consumption/marketplaces?api-version=2019-10-01"
+        }
+        Else {
+            $scope = "/providers/Microsoft.Billing/billingAccounts/$enrollment/providers/Microsoft.Billing/billingPeriods/$billingPeriod"
+            $uri = "https://management.azure.com/$scope/providers/Microsoft.Consumption/marketplaces?api-version=2018-06-30"
+        }
+    }
+
+    Process
+    {
+        $usage = @()
+        while ($uri)
+	    {
+		    $response = Invoke-RestMethod $uri -Headers $header -method Get
+            $usage += $response.value.properties
+
+            If($response.nextLink){$uri = $response.nextlink}
+            Else{$uri = $null}
+	    }
+    }
+
+    End
+    {
+        return $usage
+    }
+}
+
+function Get-AzureReservedInstanceConsumption
+{
+    <#
+        .Synopsis
+            Get azure RI consumption in a JSON format
+
+        .DESCRIPTION
+            Using the modern Consumption API
+
+        .PARAMETER accessToken
+            accessToken for access to Consumption API
+
+        .PARAMETER enrollment
+            Your Enterprise Enrollment number. Available form the EA portal.
+
+        .PARAMETER billingPeriod
+            An optional parameter to specify that you wish to get from the following year and month. Format YYYYMM
+
+        .EXAMPLE
+            $result = Get-AzureReservedInstanceConsumption -accessToken $token -enrollment 'EAEnrollmentNumber'
+
+        .EXAMPLE
+            $result = Get-AzureReservedInstanceConsumption -accessToken $token -enrollment 'EAEnrollmentNumber' -billingPeriod '2017-01'
+
+        .Notes
+            Author: Kyle Weeks
+    #>
+
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [string] $enrollment,
+
+        [Parameter(Mandatory=$true)]
+        [string] $accessToken,
+
+        [string]$billingPeriod ## year + month
+    )
+
+    Begin{
+        $header = @{"authorization"="bearer $accessToken"}
+
+        $date = get-date -date $billingPeriod
+        $year = $date.Year
+        $month = $date.Month
+        $nextMonth = $date.AddMonths(1)
+        $lastday = $nextMonth.AddTicks(-1)
+        $endDay = get-date -date $lastDay -format yyyy-MM-dd
+        $startDay = Get-Date -Year $year -Month $month -Day 1 -Format yyyy-MM-dd
+
+        $filter = "properties/eventDate+ge+$startday+AND+properties/eventDate+le+$endDay&api-version=2019-10-01"
+        $uri = "https://management.azure.com/providers/Microsoft.Billing/billingAccounts/$enrollment" + '/providers/Microsoft.Consumption/reservationTransactions?$filter=' + "$filter"
+    }
+
+    Process
+    {
+        $usage = @()
+        while ($uri)
+	    {
+		    $response = Invoke-RestMethod $uri -Headers $header -method Get
+            $usage += $response.value.properties
+
+            If($response.nextLink){$uri = $response.nextlink}
+            Else{$uri = $null}
+	    }
+    }
+
+    End
+    {
+        return $usage
+    }
+}
+
 #endregion
