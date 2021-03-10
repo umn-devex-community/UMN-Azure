@@ -1977,7 +1977,11 @@ function Get-AzureEnrollmentConsumption
 		    $response = Invoke-RestMethod $uri -Headers $header -method Get
             $usage += $response.value.properties
 
-            If($response.nextLink){$uri = $response.nextlink}
+            If($response.nextLink)
+                {
+                    $uri = $response.nextlink
+                    Start-Sleep -seconds 5
+                }
             Else{$uri = $null}
 	    }
     }

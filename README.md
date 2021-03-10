@@ -12,6 +12,9 @@ Third on graph API access query.
 
 # Releases
 
+## 1.2.5 3-10-21
+Add delay to consumption cmdlet due to API rate limits in Azure
+
 ## 1.2.4 3-2-21
 
 Add cmdlets for Consumption API. Get-AzureReservedInstanceConsumption,
